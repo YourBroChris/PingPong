@@ -7,3 +7,10 @@ TDO - 3 - PC6. 27
 VTG - 4 - 5V 
 
 Not using - 8, 6, 7
+
+Breakout board:
+2 0 4 x x
+1 5 3 9 x
+
+
+

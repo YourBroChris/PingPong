@@ -1,5 +1,5 @@
 #include<avr/io.h>
-#include<util/delay.h>
+//#include<util/delay.h>
 #include<avr/interrupt.h>
 #include<unistd.h>
 
@@ -10,10 +10,12 @@
 int main(){
 	//timer_init();
 	while(1){
-		PORTA = (1 << PA5);
-		DDRA = (1 << DDA5);
-		sleep(3);
-		PORTA = (0 << PA5);
+		PORTB = (1 << PB3);
+		DDRB = (1 << DDB3);
+		//sleep(3);
+		//PORTA = (0 << PA5);
+		/* Read port pins */
+		//i = PINB;
 		}
 	}
 
