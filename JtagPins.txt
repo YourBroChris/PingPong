@@ -1,0 +1,9 @@
+Name - Jtag pin - ATmega pin
+Ground - 2, 10 - GND
+TCK - 1 - PC4, 25
+TMS - 5 - PC5, 26
+TDI - 9 - PC7, 28
+TDO - 3 - PC6. 27
+VTG - 4 - 5V 
+
+Not using - 8, 6, 7
