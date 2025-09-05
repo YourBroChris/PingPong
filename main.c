@@ -1,12 +1,13 @@
 #include "usart.h"
+#include <avr/io.h>
 
 int main()
 {
-    usart_init(MYUBBR);
+    init_usart(MYUBBR);
 
     while(1)
     {
-        usart_transmit('a');
+        transmit_usart('a');
     }
 
 }

@@ -1,32 +1,33 @@
 #include "usart.h"
+#include <avr/io.h>
 
-void init_usart(unsigned int ubbr)
+void init_usart(unsigned int ubrr)
 {
     // Set baud rate
-    UBRRH = (unsigned char)(ubrr>>8);
-    UBRRL = (unsigned char)ubrr;
+    UBRR0H = (unsigned char)(ubrr>>8);
+    UBRR0L = (unsigned char)ubrr;
 
     // Enable receiver and transmitter
-    UCSRB = (1 << RXEN) | (1 << TXEN);
+    UCSR0B = (1 << RXEN0) | (1 << TXEN0);
 
     // Set frame format: 8data, 2stopbit
-    UCSRC = (1 << URSEL) | (1 << USBS) | (3 << UCSZ0);
+    UCSR0C = (1 << URSEL0) | (1 << USBS0) | (3 << UCSZ00);
 }
 
 void transmit_usart(unsigned char data)
 {
     // Wait for empty transmit buffer
-    while (!(UCSRA & (1 << UDRE)));
+    while (!(UCSR0A & (1 << UDRE0)));
 
     // Put data into buffer
-    UDR = data;
+    UDR0 = data;
 }
 
 unsigned char receive_usart()
 {
     // Wait for data to be received
-    while (!(UCSRA & (1 << RXC)));
+    while (!(UCSR0A & (1 << RXC0)));
 
     // Return data receiver from buffer
-    return UDR;
+    return UDR0;
 }
