@@ -4,16 +4,24 @@
 int main()
 {
     init_usart(MYUBBR);
-    DDRB = (1 << DDB4);
-    while(1)
-    {
+    return;
+}
+
+void test_transmit(){
+    while(1){
         transmit_usart('a');
         transmit_usart('b');
         transmit_usart('c');
-        /*unsigned char received = receive_usart();
+    }
+    return:
+}
+
+void test_receive(){
+        DDRB = (1 << DDB4);
+        while(1){
+        unsigned char received = receive_usart();
         if(received == 'a') {
             PORTB = (1 << PB4);
-        }*/
+        }
     }
-
 }
