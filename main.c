@@ -1,27 +1,45 @@
 #include "usart.h"
 #include <avr/io.h>
+#include <stdio.h>
+#include "AVRinterrupts.h"
 
 int main()
 {
     init_usart(MYUBBR);
-    return;
+    /*
+    while(1){
+        test_transmit();
+    }
+    */
+    //test_receive();
+    while(1){
+        if (ReceiveFlag)
+        {
+            //char received_char = receive_usart(received_char);
+            printf("Received: %c\n");
+            ReceiveFlag = 0;
+        }
+        
+        //printf("Test\n");
+    }
+    return 0;
 }
 
+/*S
 void test_transmit(){
-    while(1){
         transmit_usart('a');
         transmit_usart('b');
         transmit_usart('c');
-    }
-    return:
+    return;
 }
 
 void test_receive(){
-        DDRB = (1 << DDB4);
         while(1){
         unsigned char received = receive_usart();
         if(received == 'a') {
-            PORTB = (1 << PB4);
+            transmit_usart('b');
         }
     }
+    return;
 }
+*/
