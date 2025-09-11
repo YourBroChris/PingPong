@@ -8,6 +8,8 @@ int main()
     while(1)
     {
         transmit_usart('a');
+        transmit_usart('b');
+        transmit_usart('c');
         /*unsigned char received = receive_usart();
         if(received == 'a') {
             PORTB = (1 << PB4);

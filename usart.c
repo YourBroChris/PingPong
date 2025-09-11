@@ -19,7 +19,7 @@ void init_usart(unsigned int ubrr)
     // Enable receiver and transmitter
     UCSR0B = (1 << RXEN0) | (1 << TXEN0);
 
-    // Set frame format: 8data, 2stopbit
+    // Set frame format: 2stopbit, 8data
     UCSR0C = (1 << URSEL0) | (1 << USBS0) | (3 << UCSZ00);
 }
 
