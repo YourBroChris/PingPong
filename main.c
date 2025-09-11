@@ -3,9 +3,13 @@
 #include <stdio.h>
 #include "AVRinterrupts.h"
 
+volatile int ReceiveFlag = 0;        // <-- define here
+
+
 int main()
 {
     init_usart(MYUBBR);
+    init_interrupts();
     /*
     while(1){
         test_transmit();
@@ -16,7 +20,7 @@ int main()
         if (ReceiveFlag)
         {
             //char received_char = receive_usart(received_char);
-            printf("Received: %c\n");
+            printf("Received\n");
             ReceiveFlag = 0;
         }
         

@@ -3,5 +3,4 @@
 #include "usart.h"
 
 void init_interrupts(void);
-ISR(USART1_RX_vect);
-int ReceiveFlag = 0;
+ISR(USART1_RXC_vect);
