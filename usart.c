@@ -15,7 +15,7 @@ void init_usart(unsigned int ubrr)
     fdevopen(transmit_usart, receive_usart);
 }
 
-int transmit_usart(char data, FILE *file)
+int transmit_usart(char data)
 {
     // Wait for empty transmit buffer
     while (!(UCSR1A & (1 << UDRE1)));
@@ -25,7 +25,7 @@ int transmit_usart(char data, FILE *file)
     return 0;
 }
 
-int receive_usart(FILE *file)
+int receive_usart()
 {
     // Wait for data to be received
     while (!(UCSR1A & (1 << RXC1)));

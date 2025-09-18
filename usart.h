@@ -6,5 +6,5 @@
 #define MYUBBR ((FOSC / (16UL * BAUD)) - 1)
 
 void init_usart(unsigned int ubrr);
-int transmit_usart(char data, FILE *file);
-int receive_usart(FILE *file);
+int transmit_usart(char data);
+int receive_usart(void);
