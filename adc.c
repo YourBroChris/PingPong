@@ -1,6 +1,8 @@
-#include "adc.h"
 #include <avr/io.h>
 #include <util/delay.h>
+#include <stdint.h>
+#include "adc.h"
+
 
 void adc_init (){
 
@@ -26,11 +28,11 @@ uint8_t adc_read(uint8_t channel){
 pos_t pos_read(){
     pos_t joystick_pos;
     // Activate write
-    PORTD &= ~(1 << PD2);
+    PORTD &= ~(1 << PD5);
     _delay_us(1);
-    PORTD |= (1 << PD2);
-
-    while(busy){}
+    PORTD |= (1 << dPD5);
+    // Wait for ADC to finish reading analog signals
+    while(!PIND2){}
     joystick_pos.x = adc_read();
     joystick_pos.y = adc_read();
     adc_read();

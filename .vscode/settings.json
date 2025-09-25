@@ -3,6 +3,7 @@
         "io.h": "c",
         "usart.h": "c",
         "interrupt.h": "c",
-        "avrinterrupts.h": "c"
+        "avrinterrupts.h": "c",
+        "stdint.h": "c"
     }
 }
