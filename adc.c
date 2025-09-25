@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h> 
 
-
+#define t_CONV = (9 * 4 * 2) / (4915200/2)
 uint16_t ext_adc_size = 0x0400;
 
 void adc_init (){
@@ -33,10 +33,14 @@ pos_t pos_read(){
     ext_adc[0] = 0x00;
     printf("Test\r\n");
     // Wait for ADC to finish reading analog signals
+    _delay_us(100);
     while(!(PIND & (1 << PD2))){printf("Busy: %d\r\n", (PIND & (1 << PD2)));} // PD2
     joystick_pos.y = adc_read(ext_adc);
+    _delay_us(100);
     joystick_pos.x = adc_read(ext_adc);
+    _delay_us(100);
     adc_read(ext_adc);
+    _delay_us(100);
     adc_read(ext_adc);
     return joystick_pos;
 }
