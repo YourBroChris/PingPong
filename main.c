@@ -34,6 +34,8 @@ int main()
         
         //printf("Test\n");
         */
+       pos_t position = pos_read();
+       printf("Joystick position, X:%d\t  Y:%d\r\n", position.x, position.y);
     }
     return 0;
 }
@@ -54,7 +56,7 @@ void latch_test(){
         ext_ram[i] = i % 256;
     }
     
-    
+     
     //PORTA = 0b00000000;
     // Set latch disabled
     PORTE &= ~(1 << PE1);

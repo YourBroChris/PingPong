@@ -8,7 +8,7 @@ struct pos_t{
 typedef struct pos_t pos_t;
 
 void adc_init (void);
-uint8_t adc_read(uint8_t channel); //volatile
+uint8_t adc_read(); //volatile
 void pos_calibrate();
 pos_t pos_read(void);
 void init_ADC_clk(void);

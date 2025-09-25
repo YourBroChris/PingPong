@@ -2,7 +2,7 @@
 
 void init_xmem(){
     MCUCR |= (1 << SRE); // Enable external SRAM
-    SFIOR |= (1 << XMM0);
+    SFIOR |= (1 << XMM2);
 }
 
 void write_xmem(uint8_t data, uint16_t addr){

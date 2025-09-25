@@ -2,7 +2,11 @@
 #include <util/delay.h>
 #include <stdint.h>
 #include "adc.h"
+#include <stdio.h>
+#include <stdlib.h> 
 
+
+uint16_t ext_adc_size = 0x0400;
 
 void adc_init (){
 
@@ -12,14 +16,10 @@ void pos_calibrate(){
 
 }
 
-uint8_t adc_read(uint8_t channel){
-    uint8_t data = 0;
-    // Activate read ADC signal PD3
-    PORTD &= ~(1 << PD3);
-    _delay_us(1);
-    // Read on data bus port A
-    data = PINA;
-    PORTD |= (1 << PD3);
+uint8_t adc_read(volatile uint8_t *ext_adc){
+    printf("Reading ADC channel.\r\n");
+    uint8_t data;
+    data = ext_adc[0];
     return data;
 } //volatile
 
@@ -27,23 +27,21 @@ uint8_t adc_read(uint8_t channel){
 
 pos_t pos_read(){
     pos_t joystick_pos;
+    volatile uint8_t *ext_adc = (uint8_t *) 0x1000;
+    printf("Starting joystick position read.\r\n");
     // Activate write
-    PORTD &= ~(1 << PD5);
-    _delay_us(1);
-    PORTD |= (1 << dPD5);
+    ext_adc[0] = 0x00;
+    printf("Test\r\n");
     // Wait for ADC to finish reading analog signals
-    while(!PIND2){}
-    joystick_pos.x = adc_read();
-    joystick_pos.y = adc_read();
-    adc_read();
-    adc_read();
+    while(!(PIND & (1 << PD2))){printf("Busy: %d\r\n", (PIND & (1 << PD2)));} // PD2
+    joystick_pos.y = adc_read(ext_adc);
+    joystick_pos.x = adc_read(ext_adc);
+    adc_read(ext_adc);
+    adc_read(ext_adc);
     return joystick_pos;
 }
 
 void init_ADC_clk(){
-    // Use Timer1 (16-bit) for flexibility
-    // Output on OC1A (PD5) or OC1B (PD4) – recommended in course doc
-    
     // Set pin as output
     DDRD |= (1 << PD4);  // OC1A pin
     
@@ -57,11 +55,8 @@ void init_ADC_clk(){
 }
 
 void ADC_test(void){
-    
-    volatile char *ext_adc = (char *) 0x1000;
-
-    uint16_t ext_adc_size = 0x0400;
     printf("Starting ADC test...\r\n");
+    volatile uint8_t *ext_adc = (uint8_t *) 0x1000;
 
     uint16_t seed = rand();
 
