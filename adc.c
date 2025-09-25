@@ -29,3 +29,20 @@ void init_ADC_clk(){
     // f_clk_out = f_CPU / (2 * (OCR1B + 1))
     OCR1B = 0; 
 }
+
+void ADC_test(void){
+    
+    volatile char *ext_adc = (char *) 0x1000;
+
+    uint16_t ext_adc_size = 0x0400;
+    printf("Starting ADC test...\r\n");
+
+    uint16_t seed = rand();
+
+    srand(seed);
+    for(uint16_t i = 0; i < ext_adc_size; i++){
+        uint8_t some_value = rand();
+        ext_adc[i] = some_value;
+    }
+    printf("ADC test completed\r\n\n");
+}
