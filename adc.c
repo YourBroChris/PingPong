@@ -1,17 +1,41 @@
 #include "adc.h"
+#include <avr/io.h>
+#include <util/delay.h>
 
 void adc_init (){
 
 }
-uint8_t adc_read(uint8_t channel){
-    return 0;
-} //volatile
+
 void pos_calibrate(){
 
 }
 
+uint8_t adc_read(uint8_t channel){
+    uint8_t data = 0;
+    // Activate read ADC signal PD3
+    PORTD &= ~(1 << PD3);
+    _delay_us(1);
+    // Read on data bus port A
+    data = PINA;
+    PORTD |= (1 << PD3);
+    return data;
+} //volatile
+
+
+
 pos_t pos_read(){
-    return (pos_t){0,0};
+    pos_t joystick_pos;
+    // Activate write
+    PORTD &= ~(1 << PD2);
+    _delay_us(1);
+    PORTD |= (1 << PD2);
+
+    while(busy){}
+    joystick_pos.x = adc_read();
+    joystick_pos.y = adc_read();
+    adc_read();
+    adc_read();
+    return joystick_pos;
 }
 
 void init_ADC_clk(){
