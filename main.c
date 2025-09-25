@@ -3,13 +3,16 @@
 #include <stdio.h>
 #include "AVRinterrupts.h"
 #include "sram.h"
+#include "adc.h"
 
 volatile int ReceiveFlag = 0;        // <-- define here
+
 
 int main()
 {
     init_usart(MYUBBR);
     init_xmem();
+    init_ADC_clk();
     //init_interrupts();
     /*
     while(1){
@@ -19,8 +22,8 @@ int main()
     //test_receive();
     
     while(1){
-        //latch_test();
-        SRAM_test();
+        //ADC_test();
+        //SRAM_test();
         /*
         if (ReceiveFlag)
         {
@@ -35,24 +38,25 @@ int main()
     return 0;
 }
 
-/*S
-void test_transmit(){
-        transmit_usart('a');
-        transmit_usart('b');
-        transmit_usart('c');
-    return;
-}
 
-void test_receive(){
-        while(1){
-        unsigned char received = receive_usart();
-        if(received == 'a') {
-            transmit_usart('b');
-        }
+
+
+void ADC_test(void){
+    
+    volatile char *ext_adc = (char *) 0x1000;
+
+    uint16_t ext_adc_size = 0x0400;
+    printf("Starting ADC test...\r\n");
+
+    uint16_t seed = rand();
+
+    srand(seed);
+    for(uint16_t i = 0; i < ext_adc_size; i++){
+        uint8_t some_value = rand();
+        ext_adc[i] = some_value;
     }
-    return;
+    printf("ADC test completed\r\n\n");
 }
-*/
 
 void latch_test(){
     volatile char *ext_ram = (char *) 0x1800; // Start address for the SRAM
@@ -73,3 +77,21 @@ void latch_test(){
     PORTE &= ~(1 << PE1);
 }
 
+/*
+void test_transmit(){
+        transmit_usart('a');
+        transmit_usart('b');
+        transmit_usart('c');
+    return;
+}
+
+void test_receive(){
+        while(1){
+        unsigned char received = receive_usart();
+        if(received == 'a') {
+            transmit_usart('b');
+        }
+    }
+    return;
+}
+*/

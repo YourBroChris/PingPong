@@ -11,4 +11,6 @@ void adc_init (void);
 uint8_t adc_read(uint8_t channel); //volatile
 void pos_calibrate();
 pos_t pos_read(void);
+void init_ADC_clk(void);
+
 

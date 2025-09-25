@@ -1,4 +1,5 @@
 #include "sram.h"
+
 void init_xmem(){
     MCUCR |= (1 << SRE); // Enable external SRAM
     SFIOR |= (1 << XMM0);
