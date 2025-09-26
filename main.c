@@ -35,7 +35,7 @@ int main()
         //printf("Test\n");
         */
        pos_t position = pos_read();
-       printf("Joystick position, X:%d\t  Y:%d\r\n", position.x, position.y);
+       printf("Joystick position after conversion, X:%d\t  Y:%d\r\n", position.x, position.y);
     }
     return 0;
 }
