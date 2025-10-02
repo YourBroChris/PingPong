@@ -3,7 +3,8 @@
 
 void spi_init(void){
     // Set MOSI, SCK as Output
-    DDRB = (1 << PB3) | (1 << PB5) | (1 << PB2); // PB2 is SS, PB3 is MOSI, PB5 is SCK
+    DDRB = (1 << PB3) | (1 << PB5) | (1 << PB4); // PB3 is MOSI, PB5 is SCK, PB4 is SS
+    DDRD = (1 << PD0) | (1 << PD1); // PD0 and PD1 as SS for slaves 2 and 3
     // Enable SPI, Set as Master
     // Prescaler: Fosc/16
     SPCR = (1 << SPE) | (1 << MSTR) | (1 << SPR0);
@@ -11,7 +12,7 @@ void spi_init(void){
 
 void slave_select(int slave){
     //Set all slaves high for safety
-    PORTE |= (1 << PE4);
+    PORTB |= (1 << PB4);
     PORTD |= (1 << PD0);
     PORTD |= (1 << PD1);
     // Slave 1, set SS (PB4) low
@@ -28,7 +29,7 @@ void slave_select(int slave){
     case 2:
         PORTD &= ~(1 << PD1);
         break;
-    default:
+    case 3: // No slave selected
         break;
     } 
 
