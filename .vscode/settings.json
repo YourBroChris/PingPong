@@ -4,6 +4,7 @@
         "usart.h": "c",
         "interrupt.h": "c",
         "avrinterrupts.h": "c",
-        "stdint.h": "c"
+        "stdint.h": "c",
+        "spi.h": "c"
     }
 }

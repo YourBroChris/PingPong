@@ -1,10 +1,12 @@
-#include "usart.h"
 #include <avr/io.h>
 #include <stdio.h>
+#include <util/delay.h>
+#include "usart.h"
 #include "AVRinterrupts.h"
 #include "sram.h"
 #include "adc.h"
-#include <util/delay.h>
+#include "spi.h"
+#include "oled.h"
 
 volatile int ReceiveFlag = 0;        // <-- define here
 
@@ -14,6 +16,10 @@ int main()
     init_usart(MYUBBR);
     init_xmem();
     init_ADC_clk();
+    init_spi();
+
+    pos_t joystick_pos, slider_pos;
+
     //init_interrupts();
     /*
     while(1){
@@ -21,7 +27,8 @@ int main()
     }
     */
     //test_receive();
-    pos_t joystick_pos, slider_pos;
+    
+    write_byte(0b10100101, 1); // Write to OLED
     while(1){
         //ADC_test();
         //SRAM_test();
@@ -35,7 +42,7 @@ int main()
         
         //printf("Test\n");
         */
-         
+        
         pos_read(&slider_pos, &joystick_pos);
         _delay_us(1000000);
         printf("Joystick position:  X:%3d\t  Y:%3d   Slider position:   X:%3d\t  Y:%3d\r\n", joystick_pos.x, joystick_pos.y, slider_pos.x, slider_pos.y);
