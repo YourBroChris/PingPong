@@ -57,7 +57,7 @@ void pos_read(pos_t *slider_pos, pos_t *joystick_pos){
     // Activate write
     ext_adc[0] = 0x00;
     // Wait for ADC to finish reading and converting analog signals
-    while(!(PIND & (1 << PD2))); // Wait while Busy
+    while(!(PIND & (1 << PD4))); // Wait while Busy
     // Read joystick position
     rawjoystick_pos.x = adc_read(ext_adc);
     rawjoystick_pos.y = adc_read(ext_adc);

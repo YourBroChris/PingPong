@@ -27,7 +27,7 @@ int main()
     }
     */
     //test_receive();
-    
+    command_data_set(1);
     write_byte(0b10100101, 1); // Write to OLED
     while(1){
         //ADC_test();
