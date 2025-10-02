@@ -15,9 +15,9 @@ void slave_select(int slave){
     PORTB |= (1 << PB4);
     PORTD |= (1 << PD0);
     PORTD |= (1 << PD1);
-    // Slave 1, set SS (PB4) low
-    // Slave 2, set PD0 low
-    // Slave 3, set PD1 low
+    // Slave 1, set PB4 low (OLED)
+    // Slave 2, set PD0 low ()
+    // Slave 3, set PD1 low (CAN)
     switch (slave)
     {
     case 0:
@@ -36,21 +36,15 @@ void slave_select(int slave){
 }
 
 void write_byte(char data, int slave){
-    slave_select(slave);
-    // Start transmission by writing data to SPI data register
+    slave_select(slave); // Select the slave
 
-    // Wait for transmission complete
-
-    // Return received data from SPI data register
+    slave_select(3); // Deselect all slaves
 }
 
 char read_byte(int slave){
-    slave_select(slave);
-    // Start transmission by writing dummy data to SPI data register
-
-    // Wait for transmission complete
-
-    // Return received data from SPI data register
+    slave_select(slave); // Select the slave
+    
+    slave_select(3); // Deselect all slaves
 }
 
 void write_spi(char* buffer, int slave, int bytes){
