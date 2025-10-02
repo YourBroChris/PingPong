@@ -43,7 +43,9 @@ void write_byte(char data, int slave){
 
 char read_byte(int slave){
     slave_select(slave); // Select the slave
-    
+    SPDR = cData;
+    /* Wait for transmission complete */
+    while(!(SPSR & (1<<SPIF)))
     slave_select(3); // Deselect all slaves
 }
 
