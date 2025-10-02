@@ -17,7 +17,7 @@ void pos_calibrate(){
 }
 
 uint8_t adc_read(volatile uint8_t *ext_adc){
-    printf("Reading ADC channel.\r\n");
+    //printf("Reading ADC channel.\r\n");
     uint8_t data;
     data = ext_adc[0];
     return data;
@@ -50,28 +50,24 @@ pos_t convert_pos(uint8_t rawpos_x, uint8_t rawpos_y){
 }
 
 
-pos_t pos_read(){
+void pos_read(pos_t *slider_pos, pos_t *joystick_pos){
     pos_t joystick_pos;
     raw_pos_t rawjoystick_pos;
     volatile uint8_t *ext_adc = (uint8_t *) 0x1000;
-    printf("Starting joystick position read.\r\n");
+    //printf("Starting joystick position read.\r\n");
     // Activate write
     ext_adc[0] = 0x00;
-    _delay_us(100);
-    printf("Test\r\n");
-    // Wait for ADC to finish reading analog signals
-    //_delay_us(100);
+    // Wait for ADC to finish reading and converting analog signals
     while(!(PIND & (1 << PD2))); // Wait while Busy
-    rawjoystick_pos.y = adc_read(ext_adc);
-    //_delay_us(100);
+    // Read joystick position
     rawjoystick_pos.x = adc_read(ext_adc);
-    //_delay_us(100);
-    adc_read(ext_adc);
-    //_delay_us(100);
-    adc_read(ext_adc);
+    rawjoystick_pos.y = adc_read(ext_adc);
+    // Read slider position
+    slider_pos->x = adc_read(ext_adc);
+    slider_pos->y = adc_read(ext_adc);
     //printf("Joystick position before conversion, X:%d\t  Y:%d\r\n", rawjoystick_pos.x, rawjoystick_pos.y);
     joystick_pos = convert_pos(rawjoystick_pos.x, rawjoystick_pos.y);
-    return joystick_pos;
+    return 0;
 }
 
 void init_ADC_clk(){
