@@ -4,6 +4,7 @@
 #include "AVRinterrupts.h"
 #include "sram.h"
 #include "adc.h"
+#include <util/delay.h>
 
 volatile int ReceiveFlag = 0;        // <-- define here
 
@@ -20,7 +21,7 @@ int main()
     }
     */
     //test_receive();
-    
+    pos_t joystick_pos, slider_pos;
     while(1){
         //ADC_test();
         //SRAM_test();
@@ -34,9 +35,12 @@ int main()
         
         //printf("Test\n");
         */
-       pos_t position = pos_read();
-       printf("Joystick position after conversion, X:%d\t  Y:%d\r\n", position.x, position.y);
-    }
+         
+        pos_read(&slider_pos, &joystick_pos);
+        _delay_us(1000000);
+        printf("Joystick position:  X:%3d\t  Y:%3d   Slider position:   X:%3d\t  Y:%3d\r\n", joystick_pos.x, joystick_pos.y, slider_pos.x, slider_pos.y);
+        //printf("------------------\r\nJoystick position:\r\nX:%3d\tY:%3d\r\nSlider position:\r\nX:%3d\tY:%3d\r\n------------------\r\n\r\n", joystick_pos.x, joystick_pos.y, slider_pos.x, slider_pos.y);
+    }   
     return 0;
 }
 

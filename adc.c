@@ -51,7 +51,6 @@ pos_t convert_pos(uint8_t rawpos_x, uint8_t rawpos_y){
 
 
 void pos_read(pos_t *slider_pos, pos_t *joystick_pos){
-    pos_t joystick_pos;
     raw_pos_t rawjoystick_pos;
     volatile uint8_t *ext_adc = (uint8_t *) 0x1000;
     //printf("Starting joystick position read.\r\n");
