@@ -45,6 +45,18 @@ void oled_init(void)
     oled_command(0xAF); // Display on
 }
 
+void oled_command(uint_8 command){
+    command_data_set(1); //Set to command mode
+    write_byte(command, 1); // Write command to slave 1/oled
+    return;
+}
+
+void oled_data(uint_8 data){
+    command_data_set(0); //Set to data mode
+    write_byte(command, 1);
+    //write_spi(&buffer, 1, bytes); //Write several bytes
+    return;
+}
 
 void oled_line(int line){
 
