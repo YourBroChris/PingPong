@@ -30,17 +30,20 @@ int main()
     }
     */
     //test_receive();
+    
     oled_command(0x05);
     _delay_us(40);
     oled_data(0x01);
     _delay_us(40);
     oled_data(0x01);
     _delay_us(40);
-    oled_command(0x05);
+
+    oled_command(0x06);
     _delay_us(40);
-    oled_data(0x02);
+    oled_data(0x01);
     _delay_us(40);
-    oled_data(0x05);
+    oled_data(0xFF);
+    
     while(1){
         //ADC_test();
         //SRAM_test();
@@ -56,7 +59,7 @@ int main()
         */
         
         pos_read(&slider_pos, &joystick_pos);
-        _delay_us(1000000);
+        _delay_us(100000);
         printf("Joystick position:  X:%3d\t  Y:%3d   Slider position:   X:%3d\t  Y:%3d\r\n", joystick_pos.x, joystick_pos.y, slider_pos.x, slider_pos.y);
         //printf("------------------\r\nJoystick position:\r\nX:%3d\tY:%3d\r\nSlider position:\r\nX:%3d\tY:%3d\r\n------------------\r\n\r\n", joystick_pos.x, joystick_pos.y, slider_pos.x, slider_pos.y);
     }   

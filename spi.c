@@ -3,16 +3,14 @@
 
 void init_spi(void){
     // Set MOSI, SCK as Output
-    DDRB = (1 << PB3) | (1 << PB5); // PB3 is MOSI, PB5 is SCK
-    DDRD = (1 << PD0) | (1 << PD1) | (1 << PD2); // PD0 and PD1 as SS for slaves 2 and 3, PD2 for D/C selection
+    DDRB |= (1 << PB5) | (1 << PB7); // PB5 is MOSI, PB7 is SCK
+    DDRD |= (1 << PD0) | (1 << PD1) | (1 << PD2); // PD0 and PD1 as SS for slaves 2 and 3, PD2 for D/C selection
     // Enable SPI, Set as Master
     // Prescaler: Fosc/16
     // Limit SPI clock to meet timing constraints
     // 40 us minimum interval between command byte and first data byte
     // 2 ms minimum interval between two data bytes for read-commands
     SPCR = (1 << SPE) | (1 << MSTR) | (1 << SPR0);
-
-    
 }
 
 void slave_select(int slave){
