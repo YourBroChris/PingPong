@@ -18,6 +18,7 @@ void command_data_set(int mode);
 
 void oled_init(void)
 {
+    
     // Initialization sequence
     oled_command(0xA1); // Segment remap
     oled_command(0xC8); // Scan direction
@@ -63,9 +64,23 @@ void oled_command(uint8_t command){
 
 void oled_data(uint8_t data){
     command_data_set(1);
+    write_byte(data, 2);
+    return;
+}
+
+void io_command(uint8_t command){
+    command_data_set(0);
+    write_byte(command, 1);
+    return;
+}
+
+
+void io_data(uint8_t data){
+    command_data_set(1);
     write_byte(data, 1);
     return;
 }
+
 
 
 void oled_line(int line){

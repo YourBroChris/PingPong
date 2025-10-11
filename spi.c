@@ -24,10 +24,10 @@ void slave_select(int slave){
     switch (slave)
     {
     case 0:
-        PORTB &= ~(1 << PB4);
+        PORTB &= ~(1 << PB4); // CAN
         break;
     case 1:
-        PORTD &= ~(1 << PD0);
+        PORTD &= ~(1 << PD0); 
         break;
     case 2:
         PORTD &= ~(1 << PD1);

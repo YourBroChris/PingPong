@@ -8,6 +8,8 @@
 void oled_init(void);
 void oled_command(uint8_t command);
 void oled_data(uint8_t data);
+void io_command(uint8_t command);
+void io_data(uint8_t data);
 void oled_line(int line);
 void oled_column(int column);
 void oled_printf(char *str);

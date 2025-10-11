@@ -31,18 +31,18 @@ int main()
     */
     //test_receive();
     
-    oled_command(0x05);
+    io_command(0x05);
     _delay_us(40);
-    oled_data(0x01);
+    io_data(0x01);
     _delay_us(40);
-    oled_data(0x01);
+    io_data(0x01);
     _delay_us(40);
 
-    oled_command(0x06);
+    io_command(0x06);
     _delay_us(40);
-    oled_data(0x01);
+    io_data(0x01);
     _delay_us(40);
-    oled_data(0xFF);
+    io_data(0xFF);
     
     while(1){
         //ADC_test();
