@@ -19,21 +19,21 @@ void slave_select(slave_t slave){
     PORTB |= (1 << PB4);
     PORTD |= (1 << PD0);
     PORTD |= (1 << PD1);
-    // Slave 1, set PB4 low (OLED)
+    // Slave 1, set PB4 low (CAN)
     // Slave 2, set PD0 low (IO controller)
-    // Slave 3, set PD1 low (CAN)
+    // Slave 3, set PD1 low (OLED)
     switch (slave)
     {
-    case 0:
+    case CAN:
         PORTB &= ~(1 << PB4); // CAN
         break;
-    case 1:
+    case IO:
         PORTD &= ~(1 << PD0); 
         break;
-    case 2:
+    case OLED:
         PORTD &= ~(1 << PD1);
         break;
-    case 3: // No slave selected
+    case NONE: // No slave selected
         break;
     } 
 
@@ -44,7 +44,7 @@ void write_byte(char data, slave_t slave){
     SPDR = data;
     // Wait for transmission complete 
     while(!(SPSR & (1<<SPIF)));
-    slave_select(3); // Deselect all slaves
+    slave_select(NONE); // Deselect all slaves
 }
 
 char read_byte(slave_t slave){
@@ -52,7 +52,7 @@ char read_byte(slave_t slave){
     // Waiting to receive data
     while(!(SPSR & (1<<SPIF)));
     char data = SPDR;
-    slave_select(3); // Deselect all slaves
+    slave_select(NONE); // Deselect all slaves
     return data;
 }
 
@@ -63,7 +63,7 @@ void write_spi(char* buffer, slave_t slave, int bytes){
 }
 
 
-void read_spi(char* buffer, int slave, int bytes){
+void read_spi(char* buffer, slave_t slave, int bytes){
     for (int i = 0; i < bytes; i++) {
         buffer[i] = read_byte(slave);
     }
