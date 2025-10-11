@@ -1,23 +1,31 @@
 #include "oled.h"
+#include "spi.h"
 #include <avr/io.h>
 #include <util/delay.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdint.h>
 
+void oled_init(void);
+void oled_command(uint8_t command);
+void oled_data(uint8_t data);
+void oled_line(int line);
+void oled_column(int column);
+void oled_printf(char *str);
+void funny_graphics(void);
+void command_data_set(int mode);
 
 void oled_init(void)
 {
-    // Set control pins as output
-    DDRE |= (1 << PE4) | (1 << PE5) | (1 << PE6); // CS, DC, RST
-    // Set data pins as output
-    DDRC = 0xFF; // PORTC as output for data/command
-    // Reset the display
-    PORTE &= ~(1 << PE6); // RST low
-    _delay_ms(1);
-    PORTE |= (1 << PE6);  // RST high
-    _delay_ms(1);
     // Initialization sequence
+    oled_command(0xA1); // Segment remap
+    oled_command(0xC8); // Scan direction
+    oled_command(0xAF); // Display on
+
+
+
+    /*
     oled_command(0xAE); // Display off
     oled_command(0xA4); // Normal display mode
     oled_command(0xD5); // Set display clock divide ratio/oscillator frequency
@@ -43,7 +51,20 @@ void oled_init(void)
     oled_command(0x40);
     oled_command(0xA6); // Normal display (not inverted)
     oled_command(0xAF); // Display on
+    */
 }
+
+void oled_command(uint8_t command){
+    command_data_set(1);
+    write_byte(command, 1);
+}
+
+
+void oled_data(uint8_t data){
+    command_data_set(0);
+    write_byte(data, 1);
+}
+
 
 
 void oled_line(int line){
@@ -60,4 +81,14 @@ void oled_printf(char *str){
 
 void funny_graphics(){
 
+}
+
+void command_data_set(int mode) {
+    // Set DC pin (PORTD5) to mode
+    // 0 data mode, 1 command mode
+    if (mode == 0) {
+        PORTD &= ~(1 << PD5); // Set low for data mode
+    } else {
+        PORTD |= (1 << PD5); // Set high for command mode
+    }
 }

@@ -7,7 +7,12 @@ void init_spi(void){
     DDRD = (1 << PD0) | (1 << PD1); // PD0 and PD1 as SS for slaves 2 and 3
     // Enable SPI, Set as Master
     // Prescaler: Fosc/16
+    // Limit SPI clock to meet timing constraints
+    // 40 us minimum interval between command byte and first data byte
+    // 2 ms minimum interval between two data bytes for read-commands
     SPCR = (1 << SPE) | (1 << MSTR) | (1 << SPR0);
+
+    
 }
 
 void slave_select(int slave){
@@ -65,12 +70,3 @@ void read_spi(char* buffer, int slave, int bytes){
     }
 }
 
-void command_data_set(int mode) {
-    // Set DC pin (PORTD5) to mode
-    // 0 data mode, 1 command mode
-    if (mode == 0) {
-        PORTD &= ~(1 << PD5); // Set low for data mode
-    } else {
-        PORTD |= (1 << PD5); // Set high for command mode
-    }
-}

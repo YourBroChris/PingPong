@@ -66,7 +66,7 @@ void pos_read(pos_t *slider_pos, pos_t *joystick_pos){
     slider_pos->y = adc_read(ext_adc);
     //printf("Joystick position before conversion, X:%d\t  Y:%d\r\n", rawjoystick_pos.x, rawjoystick_pos.y);
     *joystick_pos = convert_pos(rawjoystick_pos.x, rawjoystick_pos.y);
-    return 0;
+    return;
 }
 
 void init_ADC_clk(){

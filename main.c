@@ -17,6 +17,7 @@ int main()
     init_xmem();
     init_ADC_clk();
     init_spi();
+    oled_init();
 
     pos_t joystick_pos, slider_pos;
 
@@ -27,8 +28,9 @@ int main()
     }
     */
     //test_receive();
-    command_data_set(1);
-    write_byte(0b10100101, 1); // Write to OLED
+    oled_command(0x05);
+    oled_data(0x01);
+    oled_data(0x01);
     while(1){
         //ADC_test();
         //SRAM_test();
