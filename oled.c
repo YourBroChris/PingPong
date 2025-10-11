@@ -56,7 +56,7 @@ void oled_init(void)
 
 void oled_command(uint8_t command){
     command_data_set(0);
-    write_byte(command, 1);
+    write_byte(command, 2);
     return;
 }
 
