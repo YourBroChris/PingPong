@@ -1,3 +1,10 @@
+#include <avr/io.h>
+#include <util/delay.h>
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <stdint.h>
+
 void oled_init(void);
 void oled_command(uint8_t command);
 void oled_data(uint8_t data);

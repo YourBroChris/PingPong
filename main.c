@@ -8,6 +8,8 @@
 #include "spi.h"
 #include "oled.h"
 
+#define F_CPU 4915200 // Clockspeed
+
 volatile int ReceiveFlag = 0;        // <-- define here
 
 
@@ -29,8 +31,16 @@ int main()
     */
     //test_receive();
     oled_command(0x05);
+    _delay_us(40);
     oled_data(0x01);
+    _delay_us(40);
     oled_data(0x01);
+    _delay_us(40);
+    oled_command(0x05);
+    _delay_us(40);
+    oled_data(0x02);
+    _delay_us(40);
+    oled_data(0x05);
     while(1){
         //ADC_test();
         //SRAM_test();

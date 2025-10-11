@@ -55,18 +55,17 @@ void oled_init(void)
 }
 
 void oled_command(uint8_t command){
-    command_data_set(1);
+    command_data_set(0);
     write_byte(command, 1);
     return;
 }
 
 
 void oled_data(uint8_t data){
-    command_data_set(0);
+    command_data_set(1);
     write_byte(data, 1);
     return;
 }
-
 
 
 void oled_line(int line){
@@ -89,8 +88,8 @@ void command_data_set(int mode) {
     // Set DC pin (PORTD5) to mode
     // 0 data mode, 1 command mode
     if (mode == 0) {
-        PORTD &= ~(1 << PD2); // Set low for data mode
+        PORTD &= ~(1 << PD2); // Set low for command mode
     } else {
-        PORTD |= (1 << PD2); // Set high for command mode
+        PORTD |= (1 << PD2); // Set high for data mode
     }
 }
