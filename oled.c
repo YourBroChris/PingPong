@@ -89,8 +89,8 @@ void command_data_set(int mode) {
     // Set DC pin (PORTD5) to mode
     // 0 data mode, 1 command mode
     if (mode == 0) {
-        PORTD &= ~(1 << PD5); // Set low for data mode
+        PORTD &= ~(1 << PD2); // Set low for data mode
     } else {
-        PORTD |= (1 << PD5); // Set high for command mode
+        PORTD |= (1 << PD2); // Set high for command mode
     }
 }

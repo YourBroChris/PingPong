@@ -3,8 +3,8 @@
 
 void init_spi(void){
     // Set MOSI, SCK as Output
-    DDRB = (1 << PB3) | (1 << PB5) | (1 << PB4); // PB3 is MOSI, PB5 is SCK, PB4 is SS
-    DDRD = (1 << PD0) | (1 << PD1); // PD0 and PD1 as SS for slaves 2 and 3
+    DDRB = (1 << PB3) | (1 << PB5); // PB3 is MOSI, PB5 is SCK
+    DDRD = (1 << PD0) | (1 << PD1) | (1 << PD2); // PD0 and PD1 as SS for slaves 2 and 3, PD2 for D/C selection
     // Enable SPI, Set as Master
     // Prescaler: Fosc/16
     // Limit SPI clock to meet timing constraints
