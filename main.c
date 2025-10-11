@@ -46,18 +46,22 @@ int main()
         
         //printf("Test\n");
         */
+        oled_clear();
+        
+        slave_select(IO);
         io_command(0x05);
-        _delay_us(60);
+        _delay_us(40);
+        io_data(0x05);
         io_data(0x01);
-        _delay_us(60);
-        io_data(0x01);
-        _delay_us(60);
+        slave_select(NONE);
 
+        slave_select(IO);
         io_command(0x06);
         _delay_us(60);
         io_data(0x01);
         _delay_us(60);
-        io_data(0xFF);
+        io_data(0x05);
+        slave_select(NONE);
         pos_read(&slider_pos, &joystick_pos);
         _delay_us(100000);
         printf("Joystick position:  X:%3d\t  Y:%3d   Slider position:   X:%3d\t  Y:%3d\r\n", joystick_pos.x, joystick_pos.y, slider_pos.x, slider_pos.y);

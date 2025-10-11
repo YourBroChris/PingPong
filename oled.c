@@ -18,12 +18,12 @@ void command_data_set(int mode);
 
 void oled_init(void)
 {
-    
+    slave_select(OLED);
     // Initialization sequence
     oled_command(0xA1); // Segment remap
     oled_command(0xC8); // Scan direction
     oled_command(0xAF); // Display on
-
+    slave_select(NONE);
 
 
     /*
@@ -81,7 +81,18 @@ void io_data(uint8_t data){
     return;
 }
 
-
+void oled_clear(){
+    slave_select(OLED);
+    oled_command(0b00100000); 
+    oled_command(0b00000000);
+    oled_command(0b00100010); 
+    oled_command(0b00000000);
+    oled_command(0b00000111);
+    for(int i = 0; i < 8*128; ++i){
+        oled_data(0x22);
+    }
+    slave_select(NONE);
+}
 
 void oled_line(int line){
 

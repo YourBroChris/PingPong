@@ -6,6 +6,7 @@ void init_spi(void){
     // Set MOSI, SCK as Output
     DDRB |= (1 << PB5) | (1 << PB7); // PB5 is MOSI, PB7 is SCK
     DDRD |= (1 << PD0) | (1 << PD1) | (1 << PD2); // PD0 and PD1 as SS for slaves 2 and 3, PD2 for D/C selection
+    slave_select(NONE);
     // Enable SPI, Set as Master
     // Prescaler: Fosc/16
     // Limit SPI clock to meet timing constraints
@@ -13,6 +14,8 @@ void init_spi(void){
     // 2 ms minimum interval between two data bytes for read-commands
     SPCR = (1 << SPE) | (1 << MSTR) | (1 << SPR0);
 }
+
+
 
 void slave_select(slave_t slave){
     //Set all slaves high for safety
@@ -40,21 +43,22 @@ void slave_select(slave_t slave){
 }
 
 void write_byte(char data, slave_t slave){
-    slave_select(slave); // Select the slave
+    //slave_select(slave); // Select the slave
     SPDR = data;
     // Wait for transmission complete 
     while(!(SPSR & (1<<SPIF)));
-    slave_select(NONE); // Deselect all slaves
+    //slave_select(NONE); // Deselect all slaves
 }
 
 char read_byte(slave_t slave){
-    slave_select(slave); // Select the slave
+    //slave_select(slave); // Select the slave
     // Waiting to receive data
     while(!(SPSR & (1<<SPIF)));
     char data = SPDR;
-    slave_select(NONE); // Deselect all slaves
+    //slave_select(NONE); // Deselect all slaves
     return data;
 }
+
 
 void write_spi(char* buffer, slave_t slave, int bytes){
     for (int i = 0; i < bytes; i++) {
@@ -68,4 +72,6 @@ void read_spi(char* buffer, slave_t slave, int bytes){
         buffer[i] = read_byte(slave);
     }
 }
+
+
 

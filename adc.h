@@ -1,3 +1,4 @@
+#pragma once
 #include <stdint.h>
 
 struct raw_pos_t{
