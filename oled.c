@@ -56,28 +56,28 @@ void oled_init(void)
 }
 
 void oled_command(uint8_t command){
-    command_data_set(0);
-    write_byte(command, 2);
+    command_data_set(COMMAND);
+    write_byte(command, OLED);
     return;
 }
 
 
 void oled_data(uint8_t data){
-    command_data_set(1);
-    write_byte(data, 2);
+    command_data_set(DATA);
+    write_byte(data, OLED);
     return;
 }
 
 void io_command(uint8_t command){
-    command_data_set(0);
-    write_byte(command, 1);
+    command_data_set(COMMAND);
+    write_byte(command, IO);
     return;
 }
 
 
 void io_data(uint8_t data){
-    command_data_set(1);
-    write_byte(data, 1);
+    command_data_set(DATA);
+    write_byte(data, IO);
     return;
 }
 
@@ -97,12 +97,14 @@ void oled_printf(char *str){
 
 void funny_graphics(){
 
+
 }
 
-void command_data_set(int mode) {
+
+void command_data_set(int mode_t) {
     // Set DC pin (PORTD5) to mode
     // 0 data mode, 1 command mode
-    if (mode == 0) {
+    if (mode_t == 0) {
         PORTD &= ~(1 << PD2); // Set low for command mode
     } else {
         PORTD |= (1 << PD2); // Set high for data mode

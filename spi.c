@@ -1,6 +1,7 @@
 #include "spi.h"
 #include <avr/io.h>
 
+
 void init_spi(void){
     // Set MOSI, SCK as Output
     DDRB |= (1 << PB5) | (1 << PB7); // PB5 is MOSI, PB7 is SCK
@@ -13,7 +14,7 @@ void init_spi(void){
     SPCR = (1 << SPE) | (1 << MSTR) | (1 << SPR0);
 }
 
-void slave_select(int slave){
+void slave_select(slave_t slave){
     //Set all slaves high for safety
     PORTB |= (1 << PB4);
     PORTD |= (1 << PD0);
@@ -38,7 +39,7 @@ void slave_select(int slave){
 
 }
 
-void write_byte(char data, int slave){
+void write_byte(char data, slave_t slave){
     slave_select(slave); // Select the slave
     SPDR = data;
     // Wait for transmission complete 
@@ -46,7 +47,7 @@ void write_byte(char data, int slave){
     slave_select(3); // Deselect all slaves
 }
 
-char read_byte(int slave){
+char read_byte(slave_t slave){
     slave_select(slave); // Select the slave
     // Waiting to receive data
     while(!(SPSR & (1<<SPIF)));
@@ -55,7 +56,7 @@ char read_byte(int slave){
     return data;
 }
 
-void write_spi(char* buffer, int slave, int bytes){
+void write_spi(char* buffer, slave_t slave, int bytes){
     for (int i = 0; i < bytes; i++) {
         write_byte(buffer[i], slave);
     }

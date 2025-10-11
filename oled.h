@@ -5,6 +5,12 @@
 #include <stdlib.h>
 #include <stdint.h>
 
+typedef enum{
+    COMMAND = 0,
+    DATA = 1
+} mode_t;
+
+
 void oled_init(void);
 void oled_command(uint8_t command);
 void oled_data(uint8_t data);
@@ -14,4 +20,4 @@ void oled_line(int line);
 void oled_column(int column);
 void oled_printf(char *str);
 void funny_graphics(void);
-void command_data_set(int mode);
+void command_data_set(int mode_t);
