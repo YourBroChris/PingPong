@@ -57,12 +57,14 @@ void oled_init(void)
 void oled_command(uint8_t command){
     command_data_set(1);
     write_byte(command, 1);
+    return;
 }
 
 
 void oled_data(uint8_t data){
     command_data_set(0);
     write_byte(data, 1);
+    return;
 }
 
 
