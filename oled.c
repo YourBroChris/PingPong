@@ -117,6 +117,7 @@ int oled_printf(char *str, uint8_t column, uint8_t line, FontType font){
             oled_data(column_byte);
         }
         oled_data(0x00);
+        
     }
     slave_select(NONE);
     return 0;
