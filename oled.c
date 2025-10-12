@@ -83,13 +83,21 @@ void io_data(uint8_t data){
 
 void oled_clear(){
     slave_select(OLED);
-    oled_command(0b00100000); 
-    oled_command(0b00000000);
-    oled_command(0b00100010); 
-    oled_command(0b00000000);
-    oled_command(0b00000111);
-    for(int i = 0; i < 8*128; ++i){
-        oled_data(0x22);
+    oled_command(0x20); // Set Memory Addressing Mode
+    oled_command(0x00); // 0b = Horizontal Addressing Mode, 1b = Vertical Addressing Mode
+    oled_command(0x22); // Set Page Start Address
+    oled_command(0xA0);
+    oled_command(0x07);
+    oled_data(0b00100111);
+    oled_data(0b01100111);
+    oled_data(0b01000101);
+    oled_data(0b01000101);
+    oled_data(0b01111101);
+    oled_data(0b00111001);
+    oled_data(0b00000000);
+    oled_data(0b00000000);
+    for(int i = 0; i < (8*128)-8; ++i){
+        oled_data(0x00);
     }
     slave_select(NONE);
 }
@@ -103,14 +111,13 @@ void oled_column(int column){
 }
 
 void oled_printf(char *str){
-
+    
 }
 
 void funny_graphics(){
 
 
 }
-
 
 void command_data_set(int mode_t) {
     // Set DC pin (PORTD5) to mode

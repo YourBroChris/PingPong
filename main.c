@@ -31,8 +31,7 @@ int main()
     */
     //test_receive();
     
-
-    
+    oled_clear();
     while(1){
         //ADC_test();
         //SRAM_test();
@@ -46,8 +45,8 @@ int main()
         
         //printf("Test\n");
         */
-        oled_clear();
-        
+
+
         slave_select(IO);
         io_command(0x05);
         _delay_us(40);
@@ -69,9 +68,6 @@ int main()
     }   
     return 0;
 }
-
-
-
 
 void latch_test(){
     volatile char *ext_ram = (char *) 0x1800; // Start address for the SRAM
