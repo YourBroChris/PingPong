@@ -1,5 +1,7 @@
 #include "oled.h"
 #include "spi.h"
+#include "fonts.h"
+#include "usart.h"
 #include <avr/io.h>
 #include <util/delay.h>
 #include <stdio.h>
@@ -10,11 +12,22 @@
 void oled_init(void);
 void oled_command(uint8_t command);
 void oled_data(uint8_t data);
-void oled_line(int line);
-void oled_column(int column);
-void oled_printf(char *str);
+void oled_line(uint8_t line);
+void oled_column(uint8_t column);
+int oled_printf(char *str, uint8_t column, uint8_t line, FontType font);
 void funny_graphics(void);
 void command_data_set(int mode);
+
+const FontDescriptor fonts[] = {
+    { font4, 4, 6 },
+    { font5, 5, 7 },
+    { font8, 8, 8 }
+};
+
+const FontDescriptor* get_font(FontType font) {
+    return &fonts[font];
+}
+
 
 void oled_init(void)
 {
@@ -25,34 +38,6 @@ void oled_init(void)
     oled_command(0xAF); // Display on
     slave_select(NONE);
 
-
-    /*
-    oled_command(0xAE); // Display off
-    oled_command(0xA4); // Normal display mode
-    oled_command(0xD5); // Set display clock divide ratio/oscillator frequency
-    oled_command(0x80); // Suggested value 0x80
-    oled_command(0xA8); // Set multiplex ratio
-    oled_command(0x3F); // 1/64 duty
-    oled_command(0xD3); // Set display offset
-    oled_command(0x00); // No offset
-    oled_command(0x40); // Set start line address to 0
-    oled_command(0x8D); // Enable charge pump regulator
-    oled_command(0x14);
-    oled_command(0x20); // Set memory addressing mode
-    oled_command(0x00); // Horizontal addressing mode
-    oled_command(0xA1); // Set segment re-map to normal
-    oled_command(0xC8); // Set COM output scan direction to remapped mode
-    oled_command(0xDA); // Set COM pins hardware configuration
-    oled_command(0x12);
-    oled_command(0x81); // Set contrast control
-    oled_command(0xCF);
-    oled_command(0xD9); // Set pre-charge period
-    oled_command(0xF1);
-    oled_command(0xDB); // Set VCOMH deselect level
-    oled_command(0x40);
-    oled_command(0xA6); // Normal display (not inverted)
-    oled_command(0xAF); // Display on
-    */
 }
 
 void oled_command(uint8_t command){
@@ -86,32 +71,55 @@ void oled_clear(){
     oled_command(0x20); // Set Memory Addressing Mode
     oled_command(0x00); // 0b = Horizontal Addressing Mode, 1b = Vertical Addressing Mode
     oled_command(0x22); // Set Page Start Address
-    oled_command(0xA0);
+    oled_command(0x00);
     oled_command(0x07);
-    oled_data(0b00100111);
-    oled_data(0b01100111);
-    oled_data(0b01000101);
-    oled_data(0b01000101);
-    oled_data(0b01111101);
-    oled_data(0b00111001);
-    oled_data(0b00000000);
-    oled_data(0b00000000);
-    for(int i = 0; i < (8*128)-8; ++i){
+    for(int i = 0; i < (8*128); ++i){
         oled_data(0x00);
     }
     slave_select(NONE);
 }
 
-void oled_line(int line){
-
+void oled_line(uint8_t line){
+    oled_command(0x22);
+    oled_command(line);
+    oled_command(0x07);
 }
 
-void oled_column(int column){
-
+void oled_column(uint8_t column){
+    oled_command(0x21);
+    oled_command(column);
+    oled_command(0x7F);
 }
 
-void oled_printf(char *str){
-    
+int oled_printf(char *str, uint8_t column, uint8_t line, FontType font){
+    // Get font information
+    const FontDescriptor *font_p = get_font(font);
+    const uint8_t *font_data = (const uint8_t *)font_p->data;
+    uint8_t width = font_p -> width;
+    slave_select(OLED);
+    oled_command(0x20); // Set Memory Addressing Mode
+    oled_command(0x00); // 0b = Horizontal Addressing Mode, 1b = Vertical Addressing Mode
+    oled_line(line);
+    oled_column(column);
+    printf("%p\r\n", &font5['A' - 32][0]);
+    printf("%p\r\n", &font_data[( 'A' - 32 ) * width]);
+
+
+    while ( *str) {
+        char current_char = *str++;
+        if (current_char < 32 || current_char > 126){
+            current_char = '?';
+            //return -1;
+        }
+        for (uint8_t i = 0; i < width; i++) {
+            uint16_t index = (current_char - 32) * width + i;
+            uint8_t column_byte = pgm_read_byte(&font_data[index]);
+            oled_data(column_byte);
+        }
+        oled_data(0x00);
+    }
+    slave_select(NONE);
+    return 0;
 }
 
 void funny_graphics(){

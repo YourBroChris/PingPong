@@ -11,6 +11,23 @@ typedef enum{
     DATA = 1
 } mode_t;
 
+typedef enum{
+    SMALL = 0,
+    NORMAL = 1,
+    LARGE = 2
+} FontType;
+
+typedef struct {
+    const void *data;  // pointer to font array in PROGMEM
+    uint8_t width;
+    uint8_t height;
+} FontDescriptor;
+
+
+
+
+extern const FontDescriptor fonts[];
+const FontDescriptor* get_font(FontType font);
 
 void oled_init(void);
 void oled_command(uint8_t command);
@@ -18,8 +35,8 @@ void oled_data(uint8_t data);
 void io_command(uint8_t command);
 void io_data(uint8_t data);
 void oled_clear(void);
-void oled_line(int line);
-void oled_column(int column);
-void oled_printf(char *str);
+void oled_line(uint8_t line);
+void oled_column(uint8_t column);
+int oled_printf(char *str, uint8_t column, uint8_t line, FontType font);
 void funny_graphics(void);
 void command_data_set(int mode_t);

@@ -32,6 +32,8 @@ int main()
     //test_receive();
     
     oled_clear();
+    char * testString = "HELLO WORLD";
+    oled_printf(testString, 0, 1, NORMAL);
     while(1){
         //ADC_test();
         //SRAM_test();
