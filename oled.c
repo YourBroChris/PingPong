@@ -101,8 +101,8 @@ int oled_printf(char *str, uint8_t column, uint8_t line, FontType font){
     oled_command(0x00); // 0b = Horizontal Addressing Mode, 1b = Vertical Addressing Mode
     oled_line(line);
     oled_column(column);
-    printf("%p\r\n", &font5['A' - 32][0]);
-    printf("%p\r\n", &font_data[( 'A' - 32 ) * width]);
+    //printf("%p\r\n", &font5['A' - 32][0]);
+    //printf("%p\r\n", &font_data[( 'A' - 32 ) * width]);
 
 
     while ( *str) {
@@ -120,6 +120,10 @@ int oled_printf(char *str, uint8_t column, uint8_t line, FontType font){
     }
     slave_select(NONE);
     return 0;
+}
+
+void draw_box(int x, int y, int length, int height){
+
 }
 
 void funny_graphics(){

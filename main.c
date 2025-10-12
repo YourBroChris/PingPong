@@ -23,6 +23,7 @@ int main()
     oled_init();
 
     pos_t joystick_pos, slider_pos;
+    position currentPosition = PLAY;
 
     //init_interrupts();
     /*
@@ -35,7 +36,6 @@ int main()
     oled_clear();
     char * testString = "HELLO WORLD";
     //oled_printf(testString, 0, 1, NORMAL);
-    menu();
     while(1){
         //ADC_test();
         //SRAM_test();
@@ -67,8 +67,9 @@ int main()
         slave_select(NONE);
         */
         pos_read(&slider_pos, &joystick_pos);
-        _delay_us(100000);
-        printf("Joystick position:  X:%3d\t  Y:%3d   Slider position:   X:%3d\t  Y:%3d\r\n", joystick_pos.x, joystick_pos.y, slider_pos.x, slider_pos.y);
+        menu(&joystick_pos, &slider_pos, &currentPosition);
+        //printf("Joystick position:  X:%3d\t  Y:%3d   Slider position:   X:%3d\t  Y:%3d\r\n", joystick_pos.x, joystick_pos.y, slider_pos.x, slider_pos.y);
+        //_delay_us(500000);
         //printf("------------------\r\nJoystick position:\r\nX:%3d\tY:%3d\r\nSlider position:\r\nX:%3d\tY:%3d\r\n------------------\r\n\r\n", joystick_pos.x, joystick_pos.y, slider_pos.x, slider_pos.y);
     }   
     return 0;
