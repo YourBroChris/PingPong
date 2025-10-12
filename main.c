@@ -7,6 +7,7 @@
 #include "adc.h"
 #include "spi.h"
 #include "oled.h"
+#include "graphics.h"
 
 #define F_CPU 4915200 // Clockspeed
 
@@ -33,7 +34,8 @@ int main()
     
     oled_clear();
     char * testString = "HELLO WORLD";
-    oled_printf(testString, 0, 1, NORMAL);
+    //oled_printf(testString, 0, 1, NORMAL);
+    menu();
     while(1){
         //ADC_test();
         //SRAM_test();
@@ -48,7 +50,7 @@ int main()
         //printf("Test\n");
         */
 
-
+        /*
         slave_select(IO);
         io_command(0x05);
         _delay_us(40);
@@ -63,6 +65,7 @@ int main()
         _delay_us(60);
         io_data(0x05);
         slave_select(NONE);
+        */
         pos_read(&slider_pos, &joystick_pos);
         _delay_us(100000);
         printf("Joystick position:  X:%3d\t  Y:%3d   Slider position:   X:%3d\t  Y:%3d\r\n", joystick_pos.x, joystick_pos.y, slider_pos.x, slider_pos.y);
