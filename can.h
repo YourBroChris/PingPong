@@ -1,19 +1,11 @@
 #include <avr/io.h>
-
-#define CANCTRL 0x0F
+#include "mcp2515.h"
 
 typedef struct {
     unsigned short id;
     unsigned char length;
     char data[8];
 } can_message;
-
-typedef enum{
-    normal = 0,
-    sleep= 1,
-    loopback = 2,
-    listen_only = 3
-} configuration_mode;
 
 void init_can();
 void read_instruction(uint8_t addr);
