@@ -4,7 +4,7 @@
 
 void init_spi(void){
     // Set MOSI, SCK as Output
-    DDRB |= (1 << PB5) | (1 << PB7); // PB5 is MOSI, PB7 is SCK
+    DDRB |= (1 << PB5) | (1 << PB7) | (1 << PB4);; // PB5 is MOSI, PB7 is SCK, PB4 is CAN slave
     DDRD |= (1 << PD0) | (1 << PD1) | (1 << PD2); // PD0 and PD1 as SS for slaves 2 and 3, PD2 for D/C selection
     slave_select(NONE);
     // Enable SPI, Set as Master
