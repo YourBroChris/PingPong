@@ -20,10 +20,10 @@ int main()
     init_usart(MYUBBR);
     init_xmem();
     init_ADC_clk();
-// uint8_t currmode;
-// while(1){
-//     currmode = init_can();
-//     printf("Mode: ", currmode);
+//  uint8_t currmode;
+//  while(1){
+//      currmode = init_can();
+//      printf("Mode: %d \r\n", currmode);
 // }
 
     _delay_ms(4000);
@@ -63,25 +63,8 @@ int main()
         char right = read_byte();
         char left = read_byte();
         char nav = read_byte();
-        printf("Right button: %d\r\n", right);
-        printf("Left button: %d\r\n", left);
-        printf("Nav button: %d\r\n", nav);
-        /*
-        slave_select(IO);
-        io_command(0x05);
-        _delay_us(40);
-        io_data(0x05);
-        io_data(0x01);
-        slave_select(NONE);
+        printf("Right button: %3d, Left button: %3d, Nav button: %3d\r\n", right, left, nav);
 
-        slave_select(IO);
-        io_command(0x06);
-        _delay_us(60);
-        io_data(0x01);
-        _delay_us(60);
-        io_data(0x05);
-        slave_select(NONE);
-        */
         pos_read(&slider_pos, &joystick_pos);
         menu(&joystick_pos, &slider_pos, &currentPosition);
         //printf("Joystick position:  X:%3d\t  Y:%3d   Slider position:   X:%3d\t  Y:%3d\r\n", joystick_pos.x, joystick_pos.y, slider_pos.x, slider_pos.y);

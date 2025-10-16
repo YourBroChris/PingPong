@@ -5,8 +5,7 @@
 
 extern volatile int ReceiveFlag;     // <-- declare as extern
 extern volatile int oledFlag;
-#define constant oledTimerFreq 30; //30 Hz
-
+int oledTimerFreq = 30; //30 Hz
 
 void init_interrupts(void)
 {
@@ -21,11 +20,10 @@ void init_interrupts(void)
 
     //Timer interrupt
     TCCR0  = (1 << WGM01);
-    OCR0   = F_CPU/(1024*30) - 1;
+    OCR0   = F_CPU/(1024* oledTimerFreq) - 1;
     TIMSK |= (1 << OCIE0);
     TCCR0 |= (1 << CS02) | (1 << CS00);
  
-
     // Enable global interrupts  
     sei();
     
