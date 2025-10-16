@@ -155,5 +155,24 @@ Copyright 2003 Kimberly Otten Software Consulting
 #define MCP_MERRF		0x80
 
 
+// Transmit buffers
+#define MCP_TXB0SIDH    0b00110001
+#define MCP_TXB0SIDL    0b00110010
+#define MCP_TXB0EID8    0b00110011
+#define MCP_TXB0EID0    0b00110100
+#define MCP_TXB0DLC     0b00110101
+
+#define MCP_TXB1SIDH    0b01000001
+#define MCP_TXB1SIDL    0b01000010
+#define MCP_TXB1EID8    0b01000011
+#define MCP_TXB1EID0    0b01000100
+#define MCP_TXB1DLC     0b01000101
+
+#define MCP_TXB2SIDH    0b01010001
+#define MCP_TXB2SIDL    0b01010010
+#define MCP_TXB2EID8    0b01010011
+#define MCP_TXB2EID0    0b01010100
+#define MCP_TXB2DLC     0b01010101
+
 
 #endif
