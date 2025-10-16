@@ -6,16 +6,23 @@ void init_can(){
     init_spi();
     reset_instruction();
     select_mode(MCP_LOOPBACK);
-    while((read_instruction(MCP_CANCTRL) << 5) != MODE_LOOPBACK);
-    
+    uint8_t mode = read_instruction(MCP_CANSTAT) & 0xE0;
+    while(mode != MODE_LOOPBACK){
+        mode = read_instruction(MCP_CANSTAT) & 0xE0;
+    }
+    //while((read_instruction(MCP_CANCTRL) << 5) != MODE_LOOPBACK);
 }
 
-void read_instruction(uint8_t addr){
+uint8_t read_instruction(uint8_t addr){
+    uint8_t result;
     slave_select(CAN);
-    write_byte(MCP_READ);
-    write_byte(addr);
+    write_byte(MCP_READ);      
+    write_byte(addr);         
+    result = read_byte();       
     slave_select(NONE);
+    return result;
 }
+
 
 void write_instruction(uint8_t addr, uint8_t data){
     slave_select(CAN);
@@ -58,8 +65,33 @@ void select_mode(uint8_t configuration_mode){
     bitmodify_instruction(MCP_CANCTRL, configuration_mode, 0b11100000);
 }
 
-void transmit_can(can_message* msg, uint8_t buffer_index){
-    write_byte()
+void transmit_can(can_message* msg, uint8_t buffer_index) {
+    uint8_t base_addr;
 
-    rts_instruction(buffer_index):
+    // Select the correct transmit buffer base address
+    switch (buffer_index) {
+        case 0: base_addr = MCP_TXB0SIDH; break;
+        case 1: base_addr = MCP_TXB1SIDH; break;
+        case 2: base_addr = MCP_TXB2SIDH; break;
+        default: return; // Invalid buffer index
+    }
+
+    // Load 11-bit standard ID into SIDH and SIDL
+    write_instruction(base_addr, (msg->id >> 3) & 0xFF);         // SIDH
+    write_instruction(base_addr + 1, (msg->id << 5) & 0xE0);     // SIDL
+
+    // Clear extended ID registers
+    write_instruction(base_addr + 2, 0x00);                      // EID8
+    write_instruction(base_addr + 3, 0x00);                      // EID0
+
+    // Set DLC (Data Length Code)
+    write_instruction(base_addr + 4, msg->length & 0x0F);        // DLC
+
+    // Load data bytes
+    for (uint8_t i = 0; i < msg->length; i++) {
+        write_instruction(base_addr + 5 + i, msg->data[i]);
+    }
+
+    // Request to send using the appropriate buffer
+    rts_instruction(1 << buffer_index); // 0x01 for TXB0, 0x02 for TXB1, 0x04 for TXB2
 }

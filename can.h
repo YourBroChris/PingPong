@@ -8,7 +8,7 @@ typedef struct {
 } can_message;
 
 void init_can();
-void read_instruction(uint8_t addr);
+uint8_t read_instruction(uint8_t addr);
 void write_instruction(uint8_t addr, uint8_t data);
 void rts_instruction(uint8_t txb_bits);
 void bitmodify_instruction(uint8_t addr, uint8_t data, uint8_t mask);
