@@ -2,15 +2,17 @@
 #include "spi.h"
 
 
-uint8_t init_can(){
+void init_can(){
     init_spi();
     reset_instruction();
-    select_mode(MODE_LOOPBACK);
+    select_mode(MCP_LOOPBACK);
     uint8_t mode = read_instruction(MCP_CANSTAT) & 0xE0;
+    
     while(mode != MODE_LOOPBACK){
         mode = read_instruction(MCP_CANSTAT) & 0xE0;
     }
-    return mode;
+    
+    //return mode;
     //while((read_instruction(MCP_CANCTRL) << 5) != MODE_LOOPBACK);
 }
 

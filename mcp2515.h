@@ -175,5 +175,8 @@ Copyright 2003 Kimberly Otten Software Consulting
 #define MCP_TXB2EID0    0b01010100
 #define MCP_TXB2DLC     0b01010101
 
+#define MCP_RXB0DLC     0b01100101
+#define MCP_RXB0D0      0b01100110
+#define MCP_RXB0SIDL    0b01100010
 
 #endif

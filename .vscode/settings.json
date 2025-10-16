@@ -9,6 +9,7 @@
         "string.h": "c",
         "stdio.h": "c",
         "oled.h": "c",
-        "graphics.h": "c"
+        "graphics.h": "c",
+        "mcp2515.h": "c"
     }
 }
