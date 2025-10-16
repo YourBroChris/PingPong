@@ -5,13 +5,11 @@
 uint8_t init_can(){
     init_spi();
     reset_instruction();
-    select_mode(MCP_LOOPBACK);
+    select_mode(MODE_LOOPBACK);
     uint8_t mode = read_instruction(MCP_CANSTAT) & 0xE0;
-    
     while(mode != MODE_LOOPBACK){
         mode = read_instruction(MCP_CANSTAT) & 0xE0;
     }
-    
     return mode;
     //while((read_instruction(MCP_CANCTRL) << 5) != MODE_LOOPBACK);
 }
@@ -97,4 +95,24 @@ void transmit_can(can_message* msg, uint8_t buffer_index) {
 
     // Request to send using the appropriate buffer
     rts_instruction(1 << buffer_index); // 0x01 for TXB0, 0x02 for TXB1, 0x04 for TXB2
+}
+
+void receive_can(can_message* msg){
+    // Read ID from RXB0SIDH and RXB0SIDL
+    uint8_t sid_high = read_instruction(MCP_RXB0SIDH);
+    uint8_t sid_low  = read_instruction(MCP_RXB0SIDL);
+
+    // Reconstruct 11-bit standard ID
+    msg->id = (sid_high << 3) | (sid_low >> 5);
+
+    // Read DLC (data length code)
+    msg->length = read_instruction(MCP_RXB0DLC) & 0x0F;
+
+    // Read data bytes
+    for (uint8_t i = 0; i < msg->length; i++) {
+        msg->data[i] = read_instruction(MCP_RXB0D0 + i);
+    }
+
+    // Optionally clear RXB0 interrupt flag
+    bitmodify_instruction(MCP_CANINTF, 0x00, MCP_RX0IF);
 }
