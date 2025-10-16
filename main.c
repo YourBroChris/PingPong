@@ -8,6 +8,7 @@
 #include "spi.h"
 #include "oled.h"
 #include "graphics.h"
+#include "can.h"
 
 #define F_CPU 4915200 // Clockspeed
 
@@ -19,6 +20,14 @@ int main()
     init_usart(MYUBBR);
     init_xmem();
     init_ADC_clk();
+// uint8_t currmode;
+// while(1){
+//     currmode = init_can();
+//     printf("Mode: ", currmode);
+// }
+
+    _delay_ms(4000);
+    
     init_spi();
     oled_init();
     init_interrupts();
@@ -26,7 +35,7 @@ int main()
     pos_t joystick_pos, slider_pos;
     position currentPosition = PLAY;
 
-
+    printf("Initializing\r\n");
     frame_clear();
     oled_clear();
     //char * testString = "HELLO WORLD";
@@ -48,7 +57,15 @@ int main()
             ReceiveFlag = 0;
         }
         
-
+        slave_select(IO);
+        io_command(0x04);
+        _delay_us(40);
+        char right = read_byte();
+        char left = read_byte();
+        char nav = read_byte();
+        printf("Right button: %d\r\n", right);
+        printf("Left button: %d\r\n", left);
+        printf("Nav button: %d\r\n", nav);
         /*
         slave_select(IO);
         io_command(0x05);

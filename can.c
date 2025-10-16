@@ -5,7 +5,7 @@
 uint8_t init_can(){
     init_spi();
     reset_instruction();
-    select_mode(MCP_LOOPBACK);
+    select_mode(MODE_LOOPBACK);
     uint8_t mode = read_instruction(MCP_CANSTAT) & 0xE0;
     while(mode != MODE_LOOPBACK){
         mode = read_instruction(MCP_CANSTAT) & 0xE0;
@@ -17,9 +17,9 @@ uint8_t init_can(){
 uint8_t read_instruction(uint8_t addr){
     uint8_t result;
     slave_select(CAN);
-    write_byte(MCP_READ);      
-    write_byte(addr);         
-    result = read_byte();       
+    write_byte(MCP_READ, CAN);      
+    write_byte(addr, CAN);         
+    result = read_byte(CAN);       
     slave_select(NONE);
     return result;
 }
@@ -27,37 +27,37 @@ uint8_t read_instruction(uint8_t addr){
 
 void write_instruction(uint8_t addr, uint8_t data){
     slave_select(CAN);
-    write_byte(MCP_WRITE);
-    write_byte(addr);
-    write_byte(data);
+    write_byte(MCP_WRITE, CAN);
+    write_byte(addr, CAN);
+    write_byte(data, CAN);
     slave_select(NONE);
 }
 
 void rts_instruction(uint8_t txb_bits){
     slave_select(CAN);
     uint8_t rts_instr = (0b10000000 | txb_bits);
-    write_byte(rts_instr);
+    write_byte(rts_instr, CAN);
     slave_select(NONE);
 }
 
 void bitmodify_instruction(uint8_t addr, uint8_t data, uint8_t mask){
     slave_select(CAN);
-    write_byte(MCP_BITMOD);
-    write_byte(addr);
-    write_byte(mask);
-    write_byte(data);
+    write_byte(MCP_BITMOD, CAN);
+    write_byte(addr, CAN);
+    write_byte(mask, CAN);
+    write_byte(data, CAN);
     slave_select(NONE);
 }
 
 void readstatus_instruction(){
     slave_select(CAN);
-    write_byte(MCP_READ_STATUS);
+    write_byte(MCP_READ_STATUS, CAN);
     slave_select(NONE); // Kan holde CS nede lenger dersom man vil fortsette å lese status
 }
 
 void reset_instruction(){
     slave_select(CAN);
-    write_byte(MCP_RESET);
+    write_byte(MCP_RESET, CAN);
     slave_select(NONE);
 }
 

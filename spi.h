@@ -11,8 +11,8 @@ typedef enum {
 
 void init_spi(void);
 void slave_select(slave_t slave);
-void write_byte(char data, slave_t slave);
-char read_byte(slave_t slave);
+void write_byte(char data);
+char read_byte();
 void write_spi(char* buffer, slave_t slave, int bytes);
 void read_spi(char* buffer, slave_t slave, int bytes);
 void command_data_set(int command);

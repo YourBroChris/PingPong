@@ -42,7 +42,7 @@ void slave_select(slave_t slave){
 
 }
 
-void write_byte(char data, slave_t slave){
+void write_byte(char data){
     //slave_select(slave); // Select the slave
     SPDR = data;
     // Wait for transmission complete 
@@ -50,9 +50,10 @@ void write_byte(char data, slave_t slave){
     //slave_select(NONE); // Deselect all slaves
 }
 
-char read_byte(slave_t slave){
+char read_byte(){
     //slave_select(slave); // Select the slave
     // Waiting to receive data
+    SPDR = 0x00;
     while(!(SPSR & (1<<SPIF)));
     char data = SPDR;
     //slave_select(NONE); // Deselect all slaves
@@ -62,14 +63,14 @@ char read_byte(slave_t slave){
 
 void write_spi(char* buffer, slave_t slave, int bytes){
     for (int i = 0; i < bytes; i++) {
-        write_byte(buffer[i], slave);
+        write_byte(buffer[i]);
     }
 }
 
 
 void read_spi(char* buffer, slave_t slave, int bytes){
     for (int i = 0; i < bytes; i++) {
-        buffer[i] = read_byte(slave);
+        buffer[i] = read_byte();
     }
 }
 

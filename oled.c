@@ -51,27 +51,27 @@ void oled_init(void)
 
 void oled_command(uint8_t command){
     command_data_set(COMMAND);
-    write_byte(command, OLED);
+    write_byte(command);
     return;
 }
 
 
 void oled_data(uint8_t data){
     command_data_set(DATA);
-    write_byte(data, OLED);
+    write_byte(data);
     return;
 }
 
 void io_command(uint8_t command){
     command_data_set(COMMAND);
-    write_byte(command, IO);
+    write_byte(command);
     return;
 }
 
 
 void io_data(uint8_t data){
     command_data_set(DATA);
-    write_byte(data, IO);
+    write_byte(data);
     return;
 }
 
