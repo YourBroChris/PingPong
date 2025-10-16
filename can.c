@@ -2,7 +2,7 @@
 #include "spi.h"
 
 
-void init_can(){
+uint8_t init_can(){
     init_spi();
     reset_instruction();
     select_mode(MCP_LOOPBACK);
@@ -10,6 +10,7 @@ void init_can(){
     while(mode != MODE_LOOPBACK){
         mode = read_instruction(MCP_CANSTAT) & 0xE0;
     }
+    return mode;
     //while((read_instruction(MCP_CANCTRL) << 5) != MODE_LOOPBACK);
 }
 
