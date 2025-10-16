@@ -13,11 +13,11 @@ void menu(pos_t *joystick_pos, pos_t *slider_pos, position *currentPosition) {
     int exitPosition;
     int playPosition;
     //printf("Joystick position:  X:%3d\t  Y:%3d\r\n", joystick_pos->x, joystick_pos->y);
-
+    
     switch (*currentPosition) {
         case PLAY:
             playButton = "-> PLAY";
-            exitButton = "EXIT";
+            exitButton = "   EXIT";
             playPosition = (50-(6*3));
             exitPosition = 50;
             if (joystick_pos->y < -10) {
@@ -26,7 +26,7 @@ void menu(pos_t *joystick_pos, pos_t *slider_pos, position *currentPosition) {
             break;
 
         case EXIT:
-            playButton = "PLAY";
+            playButton = "   PLAY";
             exitButton = "-> EXIT";
             playPosition = 50;
             exitPosition = (50-(6*3));
@@ -35,8 +35,8 @@ void menu(pos_t *joystick_pos, pos_t *slider_pos, position *currentPosition) {
             }
             break;
     }
-    oled_clear();
+    //oled_clear();
     oled_printf(menuTitle, 45, 0, LARGE);
-    oled_printf(playButton, playPosition, 2, NORMAL);
-    oled_printf(exitButton, exitPosition, 4, NORMAL);
+    oled_printf(playButton, (50-(6*3)), 2, NORMAL);
+    oled_printf(exitButton, (50-(6*3)), 4, NORMAL);
 }

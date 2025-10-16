@@ -12,7 +12,7 @@
 #define F_CPU 4915200 // Clockspeed
 
 volatile int ReceiveFlag = 0;        // <-- define here
-
+volatile int oledFlag = 0;
 
 int main()
 {
@@ -21,34 +21,33 @@ int main()
     init_ADC_clk();
     init_spi();
     oled_init();
+    init_interrupts();
 
     pos_t joystick_pos, slider_pos;
     position currentPosition = PLAY;
 
-    //init_interrupts();
-    /*
-    while(1){
-        test_transmit();
-    }
-    */
-    //test_receive();
-    
+
+    frame_clear();
     oled_clear();
-    char * testString = "HELLO WORLD";
+    //char * testString = "HELLO WORLD";
     //oled_printf(testString, 0, 1, NORMAL);
     while(1){
-        //ADC_test();
-        //SRAM_test();
-        /*
-        if (ReceiveFlag)
-        {
+        if(oledFlag == 1){
+            for (int i = 0; i < 8; i++){
+                for (int j = 0; j < 128; j++){
+                    uint8_t data_byte = EXT_RAM[(i*128) + j];
+                    oled_write(data_byte, j, i, NORMAL);
+                }
+            }
+            oledFlag == 0;
+        }
+
+        if (ReceiveFlag){
             //char received_char = receive_usart(received_char);
-            printf("Received\n");
+            //printf("Received\n");
             ReceiveFlag = 0;
         }
         
-        //printf("Test\n");
-        */
 
         /*
         slave_select(IO);

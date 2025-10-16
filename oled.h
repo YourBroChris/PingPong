@@ -23,9 +23,7 @@ typedef struct {
     uint8_t height;
 } FontDescriptor;
 
-
-
-
+extern volatile uint8_t * const EXT_RAM;
 extern const FontDescriptor fonts[];
 const FontDescriptor* get_font(FontType font);
 
@@ -40,3 +38,6 @@ void oled_column(uint8_t column);
 int oled_printf(char *str, uint8_t column, uint8_t line, FontType font);
 void funny_graphics(void);
 void command_data_set(int mode_t);
+void frame_clear(void);
+uint16_t get_frame_index(uint8_t column, uint8_t row);
+int oled_write(char data, uint8_t column, uint8_t line, FontType font);
