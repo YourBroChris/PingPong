@@ -15,8 +15,8 @@
 #define OLED_PAGES   8
 #define FRAME_SIZE      (OLED_WIDTH*OLED_PAGES) // 1024 bytes
 
-volatile uint8_t * const EXT_RAM = (volatile uint8_t *)0x1400;
-
+volatile uint8_t * const EXT_RAM    = (volatile uint8_t *)0x1400;
+volatile uint8_t * const dirty_bits = (volatile uint8_t *)0x1800;
 
 void oled_init(void);
 void oled_command(uint8_t command);
@@ -62,18 +62,6 @@ void oled_data(uint8_t data){
     return;
 }
 
-void io_command(uint8_t command){
-    command_data_set(COMMAND);
-    write_byte(command);
-    return;
-}
-
-
-void io_data(uint8_t data){
-    command_data_set(DATA);
-    write_byte(data);
-    return;
-}
 
 void oled_clear(){
     slave_select(OLED);
@@ -123,7 +111,6 @@ int oled_printf(char *str, uint8_t column, uint8_t row, FontType font){
         char current_char = *str++;
         if (current_char < 32 || current_char > 126){
             current_char = '?';
-            //return -1;
         }
 
         if ((uint16_t)column + width > OLED_WIDTH) break;
@@ -132,6 +119,7 @@ int oled_printf(char *str, uint8_t column, uint8_t row, FontType font){
             uint16_t index = (current_char - 32) * width + i;
             uint8_t column_byte = pgm_read_byte(&font_data[index]);
             EXT_RAM[get_frame_index(column++, row)] = column_byte;
+            dirty_bits[((row * 128) + column) - 1] = 1;
         }
 
         if (column < OLED_WIDTH) {
@@ -141,20 +129,54 @@ int oled_printf(char *str, uint8_t column, uint8_t row, FontType font){
     return 0;
 }
 
-int oled_write(char data, uint8_t column, uint8_t line, FontType font){
-    // Get font information
-    slave_select(OLED);
-    oled_command(0x20); // Set Memory Addressing Mode
-    oled_command(0x00); // 0b = Horizontal Addressing Mode, 1b = Vertical Addressing Mode
+int oled_write(char data, uint8_t column, uint8_t line){
     oled_line(line);
     oled_column(column);
     oled_data(data);
-    slave_select(NONE);
     return 0;
 }
 
+int oled_write_byte(char data){
+    oled_data(data);
+    return 0;
+}
 
+void updateOLED(updateMode mode){
+    slave_select(OLED);
+    oled_command(0x20); // Set Memory Addressing Mode
+    oled_command(0x00); // 0b = Horizontal Addressing Mode, 1b = Vertical Addressing Mode
+    switch (mode)
+    // FULL updates the entire display from EXT_RAM
+    // DIRTY only updates bytes marked as dirty in dirty_bit array
+    {
+    case FULL:
+        oled_line(0);
+        oled_column(0);
+        for (int i = 0; i < 8; i++){
+                    for (int j = 0; j < 128; j++){
+                        uint8_t data_byte = EXT_RAM[(i*128) + j];
+                        oled_write_byte(data_byte);
+                    }
+                }
+        break;
+    case DIRTY:
+        for (int i = 0; i < 8; i++){
+            for (int j = 0; j < 128; j++){
+                if (dirty_bits[i*128 + j] == 1){
+                    uint8_t data_byte = EXT_RAM[(i*128) + j];
+                    oled_write(data_byte, j, i);
+                    dirty_bits[i*128 + j] = 0;
+                }
 
+            }
+        }
+        break;            
+    default:
+        break;
+    }
+    oledFlag == 0;
+    slave_select(NONE);
+}
 
 void draw_box(int x, int y, int length, int height){
 

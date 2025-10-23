@@ -57,3 +57,23 @@ void SRAM_test(void)
     }
     printf("SRAM test completed with \r\n%4d errors in write phase and \r\n%4d errors in retrieval phase\r\n\r\n", write_errors, retrieval_errors);
 }
+
+
+// void latch_test(){
+//     volatile char *ext_ram = (char *) 0x1800; // Start address for the SRAM
+//     const int ext_ram_size = 0x800; // Size of the SRAM in bytes
+//     printf("Latch test starting...\n");
+//     // Set latch enabled PORT E1
+//     PORTE |= (1 << PE1);
+//     // Enable PORTA and PORTC as output
+//     DDRA = 0xFF;
+//     // Write to external SRAM
+//     for (int i = 0; i < ext_ram_size; i++) {
+//         ext_ram[i] = i % 256;
+//     }
+    
+     
+//     //PORTA = 0b00000000;
+//     // Set latch disabled
+//     PORTE &= ~(1 << PE1);
+// }

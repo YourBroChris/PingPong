@@ -7,6 +7,12 @@
 #include <stdint.h>
 
 typedef enum{
+    CLEAN = 0,
+    FULL = 1,
+    DIRTY = 2
+} updateMode;
+
+typedef enum{
     COMMAND = 0,
     DATA = 1
 } mode_t;

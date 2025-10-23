@@ -33,3 +33,22 @@ int receive_usart()
     // Return data receiver from buffer
     return UDR1;
 }
+
+/*
+void test_transmit(){
+        transmit_usart('a');
+        transmit_usart('b');
+        transmit_usart('c');
+    return;
+}
+
+void test_receive(){
+        while(1){
+        unsigned char received = receive_usart();
+        if(received == 'a') {
+            transmit_usart('b');
+        }
+    }
+    return;
+}
+*/
