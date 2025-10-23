@@ -18,6 +18,8 @@
 volatile uint8_t * const EXT_RAM    = (volatile uint8_t *)0x1400;
 volatile uint8_t * const dirty_bits = (volatile uint8_t *)0x1800;
 
+extern volatile int oledFlag;
+
 void oled_init(void);
 void oled_command(uint8_t command);
 void oled_data(uint8_t data);
@@ -151,7 +153,7 @@ void updateOLED(updateMode mode){
     {
     case FULL:
         oled_line(0);
-        oled_column(0);
+        oled_column(0);extern volatile int oledFlag;
         for (int i = 0; i < 8; i++){
                     for (int j = 0; j < 128; j++){
                         uint8_t data_byte = EXT_RAM[(i*128) + j];

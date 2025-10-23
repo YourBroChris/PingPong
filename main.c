@@ -18,10 +18,10 @@ volatile int oledFlag = 0;
 pos_t joystick_pos, slider_pos;
 position currentPosition = PLAY;
 
-can_message msg_out{
-    id = 54,
-    length = 2,
-    data[0] = {0b00111000}
+can_message msg_out = {
+    .id = 54,
+    .length = 2,
+    .data = {0b00111000}
 };
 // msg_out.id = 54;
 // msg_out.length = 2;
@@ -57,12 +57,12 @@ int main()
         }
         
         slave_select(IO);
-        io_command(0x04);
+        oled_command(0x04);
         _delay_us(40);
         char right = read_byte();
         char left = read_byte();
         char nav = read_byte();
-        printf("Right button: %3d, Left button: %3d, Nav button: %3d\r\n", right, left, nav);
+        //printf("Right button: %3d, Left button: %3d, Nav button: %3d\r\n", right, left, nav);
 
         pos_read(&slider_pos, &joystick_pos);
         menu(&joystick_pos, &slider_pos, &currentPosition);
