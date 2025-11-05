@@ -17,8 +17,28 @@
 
 int main()
 {
+
+    CanInit canTiming = {
+        .brp = 3,       // Baud rate prescaler (BRP + 1 = 4 → 2 × (1/16MHz) × 4 = 500ns TQ)
+        .sjw = 1,       // Synchronization Jump Width
+        .propag = 3,    // Propagation segment
+        .phase1 = 3,    // Phase segment 1
+        .phase2 = 2,    // Phase segment 2
+        .smp = 0        // Sampling mode (single sample)
+    };
+
+    typedef struct {
+        uint8_t id;
+        uint8_t length;
+        uint32_t dword[2]; // 8 bytes max
+    } CanMsg;
+
+    CanMsg msg;
+
+    
     SystemInit();
     uart_init(F_CPU, 9600);
+    can_init(canTiming, 0); // No interrupt
     WDT->WDT_MR = WDT_MR_WDDIS; //Disable Watchdog Timer
 
     //Uncomment after including uart above
@@ -37,8 +57,15 @@ int main()
     //PIOB->PIO_CODR = PIO_PB13; 
     while (1)
     {
-        for(int i = 0; i < 10000000; i++){}
-        printf("Hello\r\n");
+        if (can_rx(&msg)) {
+            printf("CAN Msg ID: 0x%03X DLC: %d Data:", msg.id, msg.length);
+            for (int i = 0; i < msg.length; i++) {
+                uint8_t byte = (i < 4) ? (msg.dword[0] >> (i * 8)) & 0xFF
+                                       : (msg.dword[1] >> ((i - 4) * 8)) & 0xFF;
+                printf(" %02X", byte);
+            }
+            printf("\r\n");
+        }
     }
     
 }

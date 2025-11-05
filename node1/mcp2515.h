@@ -119,7 +119,9 @@ Copyright 2003 Kimberly Otten Software Consulting
 #define CLKOUT_PS4		0x02
 #define CLKOUT_PS8		0x03
 
+#define MCP_NORMAL 0x00
 #define MCP_LOOPBACK 0x02
+#define MCP_CONFIG 0x04
 
 // CNF1 Register Values
 

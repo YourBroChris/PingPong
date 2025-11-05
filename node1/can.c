@@ -5,13 +5,22 @@
 void init_can(){
     init_spi();
     reset_instruction();
-    select_mode(MCP_LOOPBACK);
+    select_mode(MCP_CONFIG);
     uint8_t mode = read_instruction(MCP_CANSTAT) & 0xE0;
     
-    while(mode != MODE_LOOPBACK){
+    while(mode != MODE_CONFIG){
         mode = read_instruction(MCP_CANSTAT) & 0xE0;
     }
     
+	write_instruction(MCP_CNF1, 0b00000000);
+	write_instruction(MCP_CNF2, 0b10011000);
+	write_instruction(MCP_CNF3, 0b00000001);
+
+    select_mode(MCP_NORMAL);
+    uint8_t mode = read_instruction(MCP_CANSTAT) & 0xE0;
+    while(mode != MODE_NORMAL){
+        mode = read_instruction(MCP_CANSTAT) & 0xE0;
+    }
     //return mode;
     //while((read_instruction(MCP_CANCTRL) << 5) != MODE_LOOPBACK);
 }

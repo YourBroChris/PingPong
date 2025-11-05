@@ -45,6 +45,7 @@ int main()
     oled_clear();
     //char * testString = "HELLO WORLD";
     //oled_printf(testString, 0, 1, NORMAL);
+    can_test();
     while(1){
         if(oledFlag == 1){
             updateOLED(FULL);
@@ -75,16 +76,18 @@ int main()
 
 void can_test(){
     while(1){
-    init_can();
-    transmit_can(&msg_out, 0);
-    _delay_ms(10);
-    
-    if (read_instruction(MCP_CANINTF) & MCP_RX0IF){
-        receive_can(&msg_in);
-    };
-    
-    printf("ID: %d \r\n", msg_in.id);
-    printf("LENGTH: %d \r\n", msg_in.length);
-    printf("DATA: %d \r\n", msg_in.data[0]);
+        init_can();
+        transmit_can(&msg_out, 0);
+        _delay_ms(10);
+        /*
+        if (read_instruction(MCP_CANINTF) & MCP_RX0IF){
+            receive_can(&msg_in);
+        };
+        
+        printf("ID: %d \r\n", msg_in.id);
+        printf("LENGTH: %d \r\n", msg_in.length);
+        printf("DATA: %d \r\n", msg_in.data[0]);
+        }
+        */
     }
 }
