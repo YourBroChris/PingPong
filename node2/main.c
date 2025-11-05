@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include "sam.h"
-
+#include "uart.h"
 /*
  * Remember to update the Makefile with the (relative) path to the uart.c file.
  * This starter code will not compile until the UART file has been included in the Makefile. 
@@ -13,31 +13,32 @@
  */
 //#include "../path_to/uart.h"
 
+#define F_CPU 84000000
+
 int main()
 {
     SystemInit();
-
+    uart_init(F_CPU, 9600);
     WDT->WDT_MR = WDT_MR_WDDIS; //Disable Watchdog Timer
 
-    PMC->PMC_PCER0 |= (1 << ID_PIOB);
-
-    // Disable PWM control on PB13 (in case it was enabled)
-    // Make sure PB13 is under PIO control, not peripheral
-    PIOB->PIO_PER = (1 << 13);    // Enable PIO control on PB13
-    PIOB->PIO_OER = (1 << 13);    // Configure PB13 as output
-
-    // Set PB13 HIGH
-    
-
-    
     //Uncomment after including uart above
     //uart_init(/*cpufreq*/, /*baud*/);
     //printf("Hello World\n\r");
+    
+    PMC->PMC_PCER0 = (1 << ID_PIOB); // Enable the clock for PIOB (Port B)
 
+    // Step 2: Configure PB13 as an output
+    PIOB->PIO_PER = PIO_PB13;        // Enable control of PB13 (set PIO Enable Register)
+    PIOB->PIO_OER = PIO_PB13;        // Set PB13 as output (set Output Enable Register)
+    //PIOB->PIO_PDR = PIO_PB13;        // Disable PIO (Parallel I/O) control for PB13
+
+    // Step 3: Set PB13 high
+    PIOB->PIO_SODR = PIO_PB13;      // Set PB13 high (Set Output Data Register)
+    //PIOB->PIO_CODR = PIO_PB13; 
     while (1)
     {
-
-        PIOB->PIO_SODR = (1 << 13);   // Set output data register (drive pin high)
+        for(int i = 0; i < 10000000; i++){}
+        printf("Hello\r\n");
     }
     
 }
