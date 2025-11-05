@@ -9,6 +9,7 @@ SOURCE_FILES = \
 	$(BOOTUP) \
 	main.c \
 	uart.c \
+	can.c \
 #   filename1.c \
 #   filename2.c \
 #	filenameN.c

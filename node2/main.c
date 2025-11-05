@@ -2,7 +2,8 @@
 #include <stdarg.h>
 #include "sam.h"
 #include "uart.h"
-/*
+#include "can.h"
+/*write_instruction
  * Remember to update the Makefile with the (relative) path to the uart.c file.
  * This starter code will not compile until the UART file has been included in the Makefile. 
  * If you get somewhat cryptic errors referencing functions such as _sbrk, 
@@ -18,20 +19,8 @@
 int main()
 {
 
-    CanInit canTiming = {
-        .brp = 3,       // Baud rate prescaler (BRP + 1 = 4 → 2 × (1/16MHz) × 4 = 500ns TQ)
-        .sjw = 1,       // Synchronization Jump Width
-        .propag = 3,    // Propagation segment
-        .phase1 = 3,    // Phase segment 1
-        .phase2 = 2,    // Phase segment 2
-        .smp = 0        // Sampling mode (single sample)
-    };
+    CanInit canTiming;
 
-    typedef struct {
-        uint8_t id;
-        uint8_t length;
-        uint32_t dword[2]; // 8 bytes max
-    } CanMsg;
 
     CanMsg msg;
 
@@ -57,15 +46,9 @@ int main()
     //PIOB->PIO_CODR = PIO_PB13; 
     while (1)
     {
-        if (can_rx(&msg)) {
-            printf("CAN Msg ID: 0x%03X DLC: %d Data:", msg.id, msg.length);
-            for (int i = 0; i < msg.length; i++) {
-                uint8_t byte = (i < 4) ? (msg.dword[0] >> (i * 8)) & 0xFF
-                                       : (msg.dword[1] >> ((i - 4) * 8)) & 0xFF;
-                printf(" %02X", byte);
-            }
-            printf("\r\n");
-        }
+        if (can_rx(&msg)){
+           can_printmsg(msg);
     }
+}
     
 }

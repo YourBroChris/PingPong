@@ -12,18 +12,30 @@ void init_can(){
         mode = read_instruction(MCP_CANSTAT) & 0xE0;
     }
     
-	write_instruction(MCP_CNF1, 0b00000000);
-	write_instruction(MCP_CNF2, 0b10011000);
-	write_instruction(MCP_CNF3, 0b00000001);
+	write_instruction(MCP_CNF1, 0x03); //00000011 SJW1, SJW0, BRP5, BRP4, BRP3, BRP2, BRP1, BRP0
+	write_instruction(MCP_CNF2, 0xB1); //10110001 BTLMODE, SAM, PHSEG12, PHSEG11, PHSEG10, PRSEG2, PRSEG1, PRSEG0
+	write_instruction(MCP_CNF3, 0x05); //00000101 SOF, WAKFIL, ___, ___, ___, PHSEG22, PHSEG21, PHSEG20
+
+    // 	write_instruction(MCP_CNF1, 0b11001000); //SJW1, SJW0, BRP5, BRP4, BRP3, BRP2, BRP1, BRP0
+	// write_instruction(MCP_CNF2, 0b11100100); //BTLMODE, SAM, PHSEG12, PHSEG11, PHSEG10, PRSEG2, PRSEG1, PRSEG0
+	// write_instruction(MCP_CNF3, 0b00000100); //SOF, WAKFIL, ___, ___, ___, PHSEG22, PHSEG21, PHSEG20
 
     select_mode(MCP_NORMAL);
-    uint8_t mode = read_instruction(MCP_CANSTAT) & 0xE0;
-    while(mode != MODE_NORMAL){
-        mode = read_instruction(MCP_CANSTAT) & 0xE0;
+    uint8_t mode2 = read_instruction(MCP_CANSTAT) & 0xE0;
+    while(mode2 != MODE_NORMAL){
+        mode2 = read_instruction(MCP_CANSTAT) & 0xE0;
     }
     //return mode;
     //while((read_instruction(MCP_CANCTRL) << 5) != MODE_LOOPBACK);
 }
+
+            // uint32_t phase2:4;  // Phase 2 segment
+            // uint32_t propag:4;  // Propagation time segment
+            // uint32_t phase1:4;  // Phase 1 segment
+            // uint32_t sjw:3;     // Synchronization jump width
+            // uint32_t brp:8;     // Baud rate prescaler
+            // uint32_t smp:8;     // Sampling mode
+
 
 uint8_t read_instruction(uint8_t addr){
     uint8_t result;
