@@ -20,19 +20,24 @@ int main()
 {
 
     CanInit canTiming = {
-        .phase2 = 4,
-        .propag = 4,
-        .phase1 = 4,
-        .sjw    = 4,
-        .brp    = 33,
-        .smp    = 3
+        .phase2 = 5,
+        .propag = 1,
+        .phase1 = 6,
+        .sjw    = 2,
+        .brp    = 20,
+        .smp    = 0
     };
 
-
+typedef struct CanMsg CanMsg;
 
     CanMsg msg;
 
-    
+    CanMsg msgTx = {
+        .id = 10,
+        .length = 1,
+        .byte = {0x03}
+    };
+
     SystemInit();
     uart_init(F_CPU, 9600);
     can_init(canTiming, 0); // No interrupt
@@ -57,7 +62,7 @@ int main()
         if (!can_rx(&msg)){
             printf("CAN bus available\r\n");
             printf("CAN msg: id=%d len=%d data=\r\n", msg.id, msg.length);
-            can_printmsg(msg);
+            can_tx(msgTx);
     }
     else{
         printf("CAN msg: id=%d len=%d data=\r\n", msg.id, msg.length);
