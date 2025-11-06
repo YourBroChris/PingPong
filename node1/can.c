@@ -12,13 +12,13 @@ void init_can(){
         mode = read_instruction(MCP_CANSTAT) & 0xE0;
     }
     
-	write_instruction(MCP_CNF1, 0x03); //00000011 SJW1, SJW0, BRP5, BRP4, BRP3, BRP2, BRP1, BRP0
-	write_instruction(MCP_CNF2, 0xB1); //10110001 BTLMODE, SAM, PHSEG12, PHSEG11, PHSEG10, PRSEG2, PRSEG1, PRSEG0
-	write_instruction(MCP_CNF3, 0x05); //00000101 SOF, WAKFIL, ___, ___, ___, PHSEG22, PHSEG21, PHSEG20
+	// write_instruction(MCP_CNF1, 0x03); //00000011 SJW1, SJW0, BRP5, BRP4, BRP3, BRP2, BRP1, BRP0
+	// write_instruction(MCP_CNF2, 0xB1); //10110001 BTLMODE, SAM, PHSEG12, PHSEG11, PHSEG10, PRSEG2, PRSEG1, PRSEG0
+	// write_instruction(MCP_CNF3, 0x05); //00000101 SOF, WAKFIL, ___, ___, ___, PHSEG22, PHSEG21, PHSEG20
 
-    // 	write_instruction(MCP_CNF1, 0b11001000); //SJW1, SJW0, BRP5, BRP4, BRP3, BRP2, BRP1, BRP0
-	// write_instruction(MCP_CNF2, 0b11100100); //BTLMODE, SAM, PHSEG12, PHSEG11, PHSEG10, PRSEG2, PRSEG1, PRSEG0
-	// write_instruction(MCP_CNF3, 0b00000100); //SOF, WAKFIL, ___, ___, ___, PHSEG22, PHSEG21, PHSEG20
+    write_instruction(MCP_CNF1, 0b11000001); //SJW1, SJW0, BRP5, BRP4, BRP3, BRP2, BRP1, BRP0
+	write_instruction(MCP_CNF2, 0b11100100); //BTLMODE, SAM, PHSEG12, PHSEG11, PHSEG10, PRSEG2, PRSEG1, PRSEG0
+	write_instruction(MCP_CNF3, 0b00000100); //SOF, WAKFIL, ___, ___, ___, PHSEG22, PHSEG21, PHSEG20
 
     select_mode(MCP_NORMAL);
     uint8_t mode2 = read_instruction(MCP_CANSTAT) & 0xE0;

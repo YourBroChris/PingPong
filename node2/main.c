@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdarg.h>
-#include "sam.h"
+#include "sam/sam3x/include/sam.h"
 #include "uart.h"
 #include "can.h"
 /*write_instruction
@@ -19,7 +19,15 @@
 int main()
 {
 
-    CanInit canTiming;
+    CanInit canTiming = {
+        .phase2 = 4,
+        .propag = 4,
+        .phase1 = 4,
+        .sjw    = 4,
+        .brp    = 33,
+        .smp    = 3
+    };
+
 
 
     CanMsg msg;
@@ -46,9 +54,14 @@ int main()
     //PIOB->PIO_CODR = PIO_PB13; 
     while (1)
     {
-        if (can_rx(&msg)){
-           can_printmsg(msg);
+        if (!can_rx(&msg)){
+            printf("CAN bus available\r\n");
+            printf("CAN msg: id=%d len=%d data=\r\n", msg.id, msg.length);
+            can_printmsg(msg);
     }
-}
-    
+    else{
+        printf("CAN msg: id=%d len=%d data=\r\n", msg.id, msg.length);
+        printf("CAN message received\r\n");
+    }
+    }
 }

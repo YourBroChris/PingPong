@@ -30,10 +30,13 @@ can_message msg_out = {
 can_message msg_in;
 
 void can_test(){
+    init_can();
     while(1){
-        init_can();
-        transmit_can(&msg_out, 0);
-        _delay_ms(10);
+        //if(receive_can(&msg_out)){
+            transmit_can(&msg_out, 0);
+            _delay_ms(1000);   
+        //}
+        
         /*
         if (read_instruction(MCP_CANINTF) & MCP_RX0IF){
             receive_can(&msg_in);
@@ -55,6 +58,7 @@ int main()
     init_spi();
     oled_init();
     init_interrupts();
+    init_can();
 
     _delay_ms(4000); // 4 second delay to allow for flashing after reset in case something blocks flashing later
 
@@ -63,7 +67,7 @@ int main()
     oled_clear();
     //char * testString = "HELLO WORLD";
     //oled_printf(testString, 0, 1, NORMAL);
-    can_test();
+    //can_test();
     while(1){
         if(oledFlag == 1){
             updateOLED(FULL);
@@ -85,8 +89,11 @@ int main()
 
         pos_read(&slider_pos, &joystick_pos);
         menu(&joystick_pos, &slider_pos, &currentPosition);
+        receive_can(&msg_in);
+        printf("CAN Message, ID: %d Length: %d Data: %d\r\n", msg_in.id, msg_in.length, msg_in.data);
+        transmit_can(&msg_out, 0);
         //printf("Joystick position:  X:%3d\t  Y:%3d   Slider position:   X:%3d\t  Y:%3d\r\n", joystick_pos.x, joystick_pos.y, slider_pos.x, slider_pos.y);
-        //_delay_us(500000);
+        //_delay_us(50000);
         //printf("------------------\r\nJoystick position:\r\nX:%3d\tY:%3d\r\nSlider position:\r\nX:%3d\tY:%3d\r\n------------------\r\n\r\n", joystick_pos.x, joystick_pos.y, slider_pos.x, slider_pos.y);
     }   
     return 0;

@@ -13,7 +13,7 @@ __attribute__((packed)) struct CanInit {
             uint32_t propag:4;  // Propagation time segment
             uint32_t phase1:4;  // Phase 1 segment
             uint32_t sjw:4;     // Synchronization jump width
-            uint32_t brp:8;     // Baud rate prescaler
+            uint32_t brp:8;     // BSo aud rate prescaler
             uint32_t smp:8;     // Sampling mode
         };
         uint32_t reg;
