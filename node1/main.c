@@ -17,6 +17,7 @@ volatile uint8_t oledFlag    = 0;
 volatile uint8_t canFlag     = 0;
 
 pos_t joystick_pos, slider_pos;
+raw_pos_t rawjoystick_pos;
 position currentPosition = PLAY;
 
 can_message msg_out = {
@@ -100,10 +101,10 @@ int main()
         slave_select(NONE);
         //printf("Right button: %3d, Left button: %3d, Nav button: %3d\r\n", right, left, nav);
 
-        pos_read(&slider_pos, &joystick_pos);
+        pos_read(&slider_pos, &joystick_pos, &rawjoystick_pos);
         menu(&joystick_pos, &slider_pos, &currentPosition);
-        msg_out.data[0] = joystick_pos.x;
-        msg_out.data[1] = joystick_pos.y;
+        msg_out.data[0] = rawjoystick_pos.x;
+        msg_out.data[1] = rawjoystick_pos.y;
         // if (read_instruction(MCP_CANINTF & MCP_RX0IF)){
         //      receive_can(&msg_in);
         //     printf("CAN Message, ID: %d Length: %d Data: %d\r\n", msg_in.id, msg_in.length, msg_in.data);
