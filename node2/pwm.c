@@ -56,7 +56,8 @@ void init_pwm(){
     }
 }
 
-uint16_t change_pwm(uint8_t joystickpos){
+void change_pwm(uint8_t joystickpos){
     // I assume you change PWD registers to change width
-    return pwm_MIN + ((uint32_t)joystickpos * (pwm_MAX - pwm_MIN)) / 255;
+    uint32_t pulse_width =  pwm_MIN + ((uint32_t)joystickpos * (pwm_MAX - pwm_MIN)) / 255;
+    PWM->PWM_CH_NUM[1].PWM_CDTYUPD = pulse_width;
 }
