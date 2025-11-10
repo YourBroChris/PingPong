@@ -5,11 +5,11 @@
 void disable_write_protection(__uint8_t mode){
         PWM->PWM_WPCR = (
                         PWM_WPCR_WPRG0 | 
-                        PWM_WPCR_WPHWS1 |
-                        PWM_WPCR_WPSWS2 |
-                        PWM_WPCR_WPSWS3 |
-                        PWM_WPCR_WPSWS4 |
-                        PWM_WPCR_WPSWS5 |
+                        PWM_WPCR_WPRG1 |
+                        PWM_WPCR_WPRG2 |
+                        PWM_WPCR_WPRG3 |
+                        PWM_WPCR_WPRG4 |
+                        PWM_WPCR_WPRG5 |
                         PWM_WPCR_WPKEY(0x50574D)|
                         PWM_WPCR_WPCMD(mode) // Select enable or disable
                     ); 
