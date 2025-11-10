@@ -56,8 +56,7 @@ void init_pwm(){
     }
 }
 
-void change_pwm(int width){
+int change_pwm(uint8_t joystickpos){
     // I assume you change PWD registers to change width
-
-
+    return 1181 + ((uint32_t)joystickpos * (2756 - 1181)) / 255;
 }

@@ -6,4 +6,4 @@ typedef enum {
 } prt_cmd;
 void disable_write_protection(prt_cmd cmd);
 void init_pwm();
-void change_pwm();
+int change_pwm(uint8_t joystickpos);
