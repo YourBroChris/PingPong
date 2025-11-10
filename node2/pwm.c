@@ -45,7 +45,7 @@ void init_pwm(){
     //This register can only be written if the bits WPSWS2 and WPHWS2 are cleared in “PWM Write Protect Status Register” on page 1039.
     PWM->PWM_CH_NUM[1].PWM_CMR  = PWM_CMR_CPOL | PWM_CMR_CPRE_CLKA; //: PWM Channel Mode Register
     PWM->PWM_CH_NUM[1].PWM_CPRD = 26250; //: PWM Channel Period Register, 20ms
-    PWM->PWM_CH_NUM[1].PWM_CDTY = 1181; //: PWM Channel Duty Cycle Register, 2ms
+    PWM->PWM_CH_NUM[1].PWM_CDTY = pwm_MIN; //: PWM Channel Duty Cycle Register, 2ms
     // (0.9ms-2.1ms) -> (1181-2756) PWM_CDTY values
     PWM->PWM_ENA = PWM_ENA_CHID1; //: PsWM Enable Register, channel ID, try (1 << 1) if it doesnt work
 
@@ -56,7 +56,7 @@ void init_pwm(){
     }
 }
 
-int change_pwm(uint8_t joystickpos){
+uint16_t change_pwm(uint8_t joystickpos){
     // I assume you change PWD registers to change width
-    return 1181 + ((uint32_t)joystickpos * (2756 - 1181)) / 255;
+    return pwm_MIN + ((uint32_t)joystickpos * (pwm_MAX - pwm_MIN)) / 255;
 }

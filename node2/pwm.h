@@ -1,4 +1,5 @@
-
+#define pwm_MAX 2756
+#define pwm_MIN 1181
 
 typedef enum {
     DIS = 0,
