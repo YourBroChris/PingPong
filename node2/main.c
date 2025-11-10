@@ -40,13 +40,20 @@ typedef struct CanMsg CanMsg;
 
     SystemInit();
     uart_init(F_CPU, 9600);
-    can_init(canTiming, 0); // No interrupt
+    can_init(canTiming, 0); // 0 = no interrupt
     WDT->WDT_MR = WDT_MR_WDDIS; //Disable Watchdog Timer
-
-    //Uncomment after including uart above
-    //uart_init(/*cpufreq*/, /*baud*/);
-    //printf("Hello World\n\r");
     
+    while (1)
+    {
+        can_tx(msgTx);
+        if(can_rx(&msgRx)){
+            printf("CAN message: id=%d len=%d Joystick x: %d y: %d\r\n", msgRx.id, msgRx.length, msgRx.byte[0], msgRx.byte[1]);
+        }
+    }
+}
+
+
+void test_servo_header(){
     PMC->PMC_PCER0 = (1 << ID_PIOB); // Enable the clock for PIOB (Port B)
 
     // Step 2: Configure PB13 as an output
@@ -57,11 +64,4 @@ typedef struct CanMsg CanMsg;
     // Step 3: Set PB13 high
     PIOB->PIO_SODR = PIO_PB13;      // Set PB13 high (Set Output Data Register)
     //PIOB->PIO_CODR = PIO_PB13; 
-    while (1)
-    {
-        can_tx(msgTx);
-        if(can_rx(&msgRx)){
-            printf("CAN message: id=%d len=%d Joystick x: %d y: %d\r\n", msgRx.id, msgRx.length, msgRx.byte[0], msgRx.byte[1]);
-        }
-    }
 }
