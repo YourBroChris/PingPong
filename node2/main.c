@@ -3,6 +3,7 @@
 #include "sam/sam3x/include/sam.h"
 #include "uart.h"
 #include "can.h"
+#include "pwm.h"
 /*write_instruction
  * Remember to update the Makefile with the (relative) path to the uart.c file.
  * This starter code will not compile until the UART file has been included in the Makefile. 
@@ -18,6 +19,13 @@
 
 int main()
 {
+    SystemInit();
+    uart_init(F_CPU, 9600);
+    init_pwm();
+    while(1){
+        printf("CLK PRESCALER: %d \r\n", PWM->PWM_CLK);
+    }
+    /*
 
     CanInit canTiming = {
         .phase2 = 5,
@@ -50,6 +58,7 @@ typedef struct CanMsg CanMsg;
             printf("CAN message: id=%d len=%d Joystick x: %d y: %d\r\n", msgRx.id, msgRx.length, msgRx.byte[0], msgRx.byte[1]);
         }
     }
+    */
 }
 
 

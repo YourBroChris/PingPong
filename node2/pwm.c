@@ -1,5 +1,5 @@
 #include "pwm.h"
-#include "sam.h"
+#include "sam/sam3x/include/sam.h"
 #include <stdio.h>
 
 #define WP_SW_MASK (PWM_WPSR_WPSWS0 | PWM_WPSR_WPSWS1 | PWM_WPSR_WPSWS2 | \
@@ -22,31 +22,42 @@ void disable_write_protection(prt_cmd cmd){
 }
 
 void init_pwm(){
-    disable_write_protection(DISABLE);
+    disable_write_protection(DIS);
     if ( (PWM->PWM_WPSR & WP_SW_MASK) != 0 || (PWM->PWM_WPSR & WP_HW_MASK) != 0 ) {
         printf("PWM WP not disabled correctly\r\n");
     }
     // Enable peripheral clocks
-    PMC->PMC_PCERn |= (1 << PIDn);
+    //PMC->PMC_PCERn |= (1 << PIDn);
+    PMC->PMC_PCER0 |= (1 << ID_PIOB);               // Enable PIOB
+    PMC->PMC_PCER1 |= (1 << (ID_PWM - 32));         // Enable PWM
+
 
     // Disable PIO
-    PIOC->PIO_PDR |= PIO_PDR_Pn;
+    PIOB->PIO_PDR |= PIO_PB13;
 
     // AB Peripheral select
-    PIOC->PIO_ABSR |= PIO_ABSR_Pn;
-    PIOC->PIO_MDDR = PIO_MDDR_Pn;
+    PIOB->PIO_ABSR |= PIO_PB13;  // Select peripheral B
+    //PIOB->PIO_MDDR = PIO_PB13;  // Disable multi-drive
+     PIOB->PIO_PUDR |= PIO_PB13; // Disable pull-up
 
     //This register can only be written if the bits WPSWS0 and WPHWS0 are cleared in “PWM Write Protect Status Register” on page 1039.
-    PWM->PWM_CLK / PWM->REG_PWM_CLK = ; //: PWM Clock register. Sets a prescaler, not required
+    PWM->PWM_CLK = PWM_CLK_PREA(3) | PWM_CLK_DIVA(8); //: PWM Clock register. Sets a prescaler, not required
     //This register can only be written if the bits WPSWS2 and WPHWS2 are cleared in “PWM Write Protect Status Register” on page 1039.
-    PWM->PWM_CH_NUM[1].PWM_CMR  = ; //: PWM Channel Mode Register
-    PWM->PWM_CH_NUM[1].PWM_CPRD = ; //: PWM Channel Period Registe
-    PWM->PWM_CH_NUM[1].PWM_CDTY = ; //: PWM Channel Duty Cycle Register
-    PWM->PWM_ENA = 1; //: PsWM Enable Register, channel ID
+    PWM->PWM_CH_NUM[1].PWM_CMR  = PWM_CMR_CPOL | PWM_CMR_CPRE_CLKA; //: PWM Channel Mode Register
+    PWM->PWM_CH_NUM[1].PWM_CPRD = 26250; //: PWM Channel Period Register, 20ms
+    PWM->PWM_CH_NUM[1].PWM_CDTY = 1181; //: PWM Channel Duty Cycle Register, 2ms
+    // (0.9ms-2.1ms) -> (1181-2756) PWM_CDTY values
+    PWM->PWM_ENA = PWM_ENA_CHID1; //: PsWM Enable Register, channel ID, try (1 << 1) if it doesnt work
 
 
     disable_write_protection(ENABLE);
     if ( (PWM->PWM_WPSR & WP_SW_MASK) != WP_SW_MASK)  {
         printf("PWM WP not enabled correctly\r\n");
     }
+}
+
+void change_pwm(int width){
+    // I assume you change PWD registers to change width
+
+
 }
