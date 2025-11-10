@@ -15,7 +15,6 @@ void init_interrupts(void)
     cli();
 
 
-    //UART1 RX rising edge interrupt configuration
     //UCSR1C |= (1 << UCSZ11) | (1 << UCSZ10);
     // UART1 RX interrupt enable
     UCSR1B |= (1 << RXCIE1);
@@ -29,7 +28,7 @@ void init_interrupts(void)
     // CAN TIMER
     TCCR1A = 0;
     TCCR1B = (1 << WGM12);
-    OCR1  = ((F_CPU/1024) / canTimerFreq) - 1; 
+    OCR1A  = ((F_CPU/1024) / canTimerFreq) - 1; 
     TIMSK |= (1 << OCIE1A);
     TCCR1B  |= (1 << CS12) | (1 << CS10);
 
