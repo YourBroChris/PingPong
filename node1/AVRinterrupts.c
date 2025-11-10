@@ -3,11 +3,11 @@
 #include "usart.h"
 #include "AVRinterrupts.h"
 
-extern volatile int ReceiveFlag;     // <-- declare as extern
-extern volatile int oledFlag;
-extern volatile int canFlag;
+extern volatile uint8_t ReceiveFlag;     // <-- declare as extern
+extern volatile uint8_t oledFlag;
+extern volatile uint8_t canFlag;
 int oledTimerFreq = 30; //30 Hz
-int canTimerFreq = 30; //30 Hz
+int canTimerFreq = 1; //30 Hz
 
 void init_interrupts(void)
 {
@@ -26,11 +26,13 @@ void init_interrupts(void)
     TIMSK |= (1 << OCIE0);
     TCCR0 |= (1 << CS02) | (1 << CS00);
     // CAN TIMER
-    TCCR1A = 0;
-    TCCR1B = (1 << WGM12);
-    OCR1A  = ((F_CPU/1024) / canTimerFreq) - 1; 
-    TIMSK |= (1 << OCIE1A);
-    TCCR1B  |= (1 << CS12) | (1 << CS10);
+    TCCR2  = 0;
+    TCNT2  = 0;
+    OCR2   = (uint8_t)((F_CPU / 1024) / (uint32_t)canTimerFreq - 1); // 159
+    TIFR  |= (1 << OCF2);
+    TIMSK |= (1 << OCIE2);
+    TCCR2  = (1 << WGM21) | (1 << CS22) | (1 << CS21) | (1 << CS20); // CTC, /1024
+
 
     // Enable global interrupts  
     sei();
@@ -52,6 +54,6 @@ ISR(TIMER0_COMP_vect){
     oledFlag = 1;
 }
 
-ISR(TIMER1_COMP_vect){
+ISR(TIMER2_COMP_vect){
     canFlag = 1;
 }

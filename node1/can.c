@@ -3,7 +3,7 @@
 
 
 void init_can(){
-    init_spi();
+    //init_spi();
     reset_instruction();
     select_mode(MCP_CONFIG);
     uint8_t mode = read_instruction(MCP_CANSTAT) & 0xE0;
@@ -19,6 +19,10 @@ void init_can(){
     // write_instruction(MCP_CNF1, 0b11000011); //SJW1, SJW0, BRP5, BRP4, BRP3, BRP2, BRP1, BRP0
 	// write_instruction(MCP_CNF2, 0b11100100); //BTLMODE, SAM, PHSEG12, PHSEG11, PHSEG10, PRSEG2, PRSEG1, PRSEG0
 	// write_instruction(MCP_CNF3, 0b00000100); //SOF, WAKFIL, ___, ___, ___, PHSEG22, PHSEG21, PHSEG20
+    // Accept any frame in both buffers
+    write_instruction(MCP_RXB0CTRL, 0x60);      // RXM1:0 = 11 (accept any)
+    write_instruction(MCP_RXB1CTRL, 0x60);      // same for RXB1
+    bitmodify_instruction(MCP_RXB0CTRL, 1<<BUKT, 1<<BUKT); // optional: rollover
 
 
     write_instruction(MCP_RXB0CTRL, 0x00);
@@ -68,7 +72,7 @@ void rts_instruction(uint8_t txb_bits){
     slave_select(CAN);
     uint8_t rts_instr = (0b10000000 | txb_bits);
     write_byte(rts_instr);
-    slave_select(NONE);
+    slave_select(NONE);slave_select(CAN);
 }
 
 void bitmodify_instruction(uint8_t addr, uint8_t data, uint8_t mask){
@@ -99,7 +103,6 @@ void select_mode(uint8_t configuration_mode){
 
 void transmit_can(can_message* msg, uint8_t buffer_index) {
     uint8_t base_addr;
-
     // Select the correct transmit buffer base address
     switch (buffer_index) {
         case 0: base_addr = MCP_TXB0SIDH; break;

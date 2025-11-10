@@ -12,17 +12,17 @@
 
 #define F_CPU 4915200 // Clockspeed
 
-volatile int ReceiveFlag = 0; 
-volatile int oledFlag    = 0;
-volatile int canFlag     = 0;
+volatile uint8_t ReceiveFlag = 0; 
+volatile uint8_t oledFlag    = 0;
+volatile uint8_t canFlag     = 0;
 
 pos_t joystick_pos, slider_pos;
 position currentPosition = PLAY;
 
 can_message msg_out = {
     .id = 54,
-    .length = 2,
-    .data = {0b00111000}
+    .length = 1,
+    .data = {0b00000100}
 };
 // msg_out.id = 54;
 // msg_out.length = 2;
@@ -54,6 +54,7 @@ void can_test(){
 int main()
 {
     init_usart(MYUBBR);
+    printf("Initializing\r\n");
     init_xmem();
     init_ADC_clk();    
     init_spi();
@@ -63,12 +64,12 @@ int main()
 
     _delay_ms(4000); // 4 second delay to allow for flashing after reset in case something blocks flashing later
 
-    printf("Initializing\r\n");
     frame_clear();
     oled_clear();
     while(1){
         if(oledFlag == 1){
             updateOLED(FULL);
+            oledFlag = 0;
         }
 
         if (ReceiveFlag){
@@ -76,13 +77,16 @@ int main()
             //printf("Received USART: %d\n", received_char);
             ReceiveFlag = 0;
         }
-
+        printf("canFlag: %d\r\n", canFlag);
         if (canFlag){
-            receive_can(&msg_in);
-            printf("CAN Message, ID: %d Length: %d Data: %d\r\n", msg_in.id, msg_in.length, msg_in.data);
-            transmit_can(&msg_out, 0);
+            if (read_instruction(MCP_CANINTF) & ((MCP_RX0IF) | (MCP_RX1IF))) {
+                receive_can(&msg_in);
+                printf("CAN Message, ID:%d Length:%d Data0:%d\r\n", msg_in.id, msg_in.length, msg_in.data[0]);
+                }
+            //transmit_can(&msg_out, 0);
             canFlag = 0;
         }
+        //printf("We got past the can loop\r\n");
         
         slave_select(IO);
         oled_command(0x04);
@@ -90,14 +94,16 @@ int main()
         char right = read_byte();
         char left = read_byte();
         char nav = read_byte();
+        slave_select(NONE);
         //printf("Right button: %3d, Left button: %3d, Nav button: %3d\r\n", right, left, nav);
 
         pos_read(&slider_pos, &joystick_pos);
         menu(&joystick_pos, &slider_pos, &currentPosition);
-        if (read_instruction(MCP_CANINTF & MCP_RX0IF)){
-             receive_can(&msg_in);
-            printf("CAN Message, ID: %d Length: %d Data: %d\r\n", msg_in.id, msg_in.length, msg_in.data);
-        }
+        
+        // if (read_instruction(MCP_CANINTF & MCP_RX0IF)){
+        //      receive_can(&msg_in);
+        //     printf("CAN Message, ID: %d Length: %d Data: %d\r\n", msg_in.id, msg_in.length, msg_in.data);
+        // }
         //transmit_can(&msg_out, 0);
         //printf("Joystick position:  X:%3d\t  Y:%3d   Slider position:   X:%3d\t  Y:%3d\r\n", joystick_pos.x, joystick_pos.y, slider_pos.x, slider_pos.y);
         //_delay_us(50000);
