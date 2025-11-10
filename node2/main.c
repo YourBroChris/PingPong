@@ -60,8 +60,8 @@ typedef struct CanMsg CanMsg;
     while (1)
     {
         can_tx(msgTx);
-        // if(can_rx(&msg)){
-        //     printf("CAN message: id=%d len=%d data=%d\r\n", msg.id, msg.length, msg.byte[0]);
-        // }
+        if(can_rx(&msg)){
+            printf("CAN message: id=%d len=%d data=%d\r\n", msg.id, msg.length, msg.byte[0]);
+        }
     }
 }

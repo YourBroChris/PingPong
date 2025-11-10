@@ -86,7 +86,7 @@ int main()
             //     receive_can_any(&msg_in);
             //     printf("CAN Message, ID:%d Length:%d Data0:%d\r\n", msg_in.id, msg_in.length, msg_in.data[0]);
             //     }
-            //transmit_can(&msg_out, 0);
+            transmit_can(&msg_out, 0);
             canFlag = 0;
         }
         //printf("We got past the can loop\r\n");
