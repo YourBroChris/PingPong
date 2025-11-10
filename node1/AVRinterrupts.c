@@ -27,10 +27,11 @@ void init_interrupts(void)
     TIMSK |= (1 << OCIE0);
     TCCR0 |= (1 << CS02) | (1 << CS00);
     // CAN TIMER
-    TCCR1 = (1 << WGM01);
+    TCCR1A = 0;
+    TCCR1B = (1 << WGM12);
     OCR1  = ((F_CPU/1024) / canTimerFreq) - 1; 
-    TIMSK |= (1 << OCIE1);
-    TCCR1 |= (1 << CS02) | (1 << CS00);
+    TIMSK |= (1 << OCIE1A);
+    TCCR1B  |= (1 << CS12) | (1 << CS10);
 
     // Enable global interrupts  
     sei();
