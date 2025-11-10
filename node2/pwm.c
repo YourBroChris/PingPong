@@ -46,7 +46,7 @@ void init_pwm(){
 
 
     disable_write_protection(ENABLE);
-    if ( (PWM->PWM_WPSR & WP_SW_MASK) != WP_SW_MASK || (PWM->PWM_WPSR & WP_HW_MASK) != WP_HW_MASK )  {
+    if ( (PWM->PWM_WPSR & WP_SW_MASK) != WP_SW_MASK)  {
         printf("PWM WP not enabled correctly\r\n");
     }
 }
