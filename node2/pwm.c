@@ -1,6 +1,7 @@
 #include "pwm.h"
 #include "sam/sam3x/include/sam.h"
 #include <stdio.h>
+#include <stdint.h>
 
 #define WP_SW_MASK (PWM_WPSR_WPSWS0 | PWM_WPSR_WPSWS1 | PWM_WPSR_WPSWS2 | \
                     PWM_WPSR_WPSWS3 | PWM_WPSR_WPSWS4 | PWM_WPSR_WPSWS5)
@@ -56,7 +57,13 @@ void init_pwm(){
     }
 }
 
-uint16_t change_pwm(uint8_t joystickpos){
+void change_pwm(uint8_t rawjoystickpos){
     // I assume you change PWD registers to change width
-    return pwm_MIN + ((uint32_t)joystickpos * (pwm_MAX - pwm_MIN)) / 255;
+    uint32_t pulse_width = pwm_MIN + ((uint32_t)rawjoystickpos * (pwm_MAX - pwm_MIN)) / 255;
+    if((pulse_width > 1181) & (pulse_width < 2756)){
+        PWM->PWM_CH_NUM[1].PWM_CDTYUPD = pulse_width;
+    }
+    else{
+        printf("Pulse width out of range: %d\r\n", pulse_width);
+    }
 }

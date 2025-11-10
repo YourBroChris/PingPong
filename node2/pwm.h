@@ -1,3 +1,4 @@
+#include <stdint.h>
 #define pwm_MAX 2756
 #define pwm_MIN 1181
 
@@ -7,4 +8,4 @@ typedef enum {
 } prt_cmd;
 void disable_write_protection(prt_cmd cmd);
 void init_pwm();
-int change_pwm(uint8_t joystickpos);
+void change_pwm(uint8_t rawjoystickpos);
