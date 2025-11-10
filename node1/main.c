@@ -21,8 +21,8 @@ position currentPosition = PLAY;
 
 can_message msg_out = {
     .id = 54,
-    .length = 1,
-    .data = {0b00000100}
+    .length = 2,
+    .data = {0x00, 0x00}
 };
 // msg_out.id = 54;
 // msg_out.length = 2;
@@ -102,7 +102,8 @@ int main()
 
         pos_read(&slider_pos, &joystick_pos);
         menu(&joystick_pos, &slider_pos, &currentPosition);
-        
+        msg_out.data[0] = joystick_pos.x;
+        msg_out.data[1] = joystick_pos.y;
         // if (read_instruction(MCP_CANINTF & MCP_RX0IF)){
         //      receive_can(&msg_in);
         //     printf("CAN Message, ID: %d Length: %d Data: %d\r\n", msg_in.id, msg_in.length, msg_in.data);

@@ -30,7 +30,7 @@ int main()
 
 typedef struct CanMsg CanMsg;
 
-    CanMsg msg;
+    CanMsg msgRx;
 
     CanMsg msgTx = {
         .id = 10,
@@ -60,8 +60,8 @@ typedef struct CanMsg CanMsg;
     while (1)
     {
         can_tx(msgTx);
-        if(can_rx(&msg)){
-            printf("CAN message: id=%d len=%d data=%d\r\n", msg.id, msg.length, msg.byte[0]);
+        if(can_rx(&msgRx)){
+            printf("CAN message: id=%d len=%d Joystick x: %d y: %d\r\n", msgRx.id, msgRx.length, msgRx.byte[0], msgRx.byte[1]);
         }
     }
 }
