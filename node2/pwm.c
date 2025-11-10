@@ -2,7 +2,7 @@
 #include "sam.h"
 #include <stdio.h>
 
-void disable_write_protection(__uint8_t mode){
+void disable_write_protection(prt_cmd cmd){
         PWM->PWM_WPCR = (
                         PWM_WPCR_WPRG0 | 
                         PWM_WPCR_WPRG1 |
@@ -11,12 +11,12 @@ void disable_write_protection(__uint8_t mode){
                         PWM_WPCR_WPRG4 |
                         PWM_WPCR_WPRG5 |
                         PWM_WPCR_WPKEY(0x50574D)|
-                        PWM_WPCR_WPCMD(mode) // Select enable or disable
+                        PWM_WPCR_WPCMD(cmd) // Select enable or disable
                     ); 
 }
 
 void init_pwm(){
-
+    disable_write_protection(DISABLE);
     // Enable peripheral clocks
     PMC->PMC_PCERn |= (1 << PIDn);
 
@@ -33,5 +33,5 @@ void init_pwm(){
     PWM->PWM_CH_NUM[1].PWM_CPRD / PWM->REG_PWM_CPRDn = ; //: PWM Channel Period Registe
     PWM->PWM_CH_NUM[1].PWM_CDTY / PWM->REG_PWM_CDTYn = ; //: PWM Channel Duty Cycle Register
     PWM->PWM_ENA / PWM->PWM_ENA = 1; //: PsWM Enable Register, channel ID
-
+    disable_write_protection(ENABLE);
 }
