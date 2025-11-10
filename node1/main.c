@@ -89,8 +89,10 @@ int main()
 
         pos_read(&slider_pos, &joystick_pos);
         menu(&joystick_pos, &slider_pos, &currentPosition);
-        receive_can(&msg_in);
-        printf("CAN Message, ID: %d Length: %d Data: %d\r\n", msg_in.id, msg_in.length, msg_in.data);
+        if (read_instruction(MCP_CANINTF & MCP_RX0IF)){
+             receive_can(&msg_in);
+            printf("CAN Message, ID: %d Length: %d Data: %d\r\n", msg_in.id, msg_in.length, msg_in.data);
+        }
         //transmit_can(&msg_out, 0);
         //printf("Joystick position:  X:%3d\t  Y:%3d   Slider position:   X:%3d\t  Y:%3d\r\n", joystick_pos.x, joystick_pos.y, slider_pos.x, slider_pos.y);
         //_delay_us(50000);

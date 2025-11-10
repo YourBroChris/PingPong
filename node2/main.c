@@ -59,6 +59,8 @@ typedef struct CanMsg CanMsg;
     //PIOB->PIO_CODR = PIO_PB13; 
     while (1)
     {
+        can_tx(msgTx);
+        /*
         if (!can_rx(&msg)){
             printf("CAN bus available\r\n");
             printf("CAN msg: id=%d len=%d data=\r\n", msg.id, msg.length);
@@ -68,5 +70,6 @@ typedef struct CanMsg CanMsg;
         printf("CAN msg: id=%d len=%d data=\r\n", msg.id, msg.length);
         printf("CAN message received\r\n");
     }
+        */
     }
 }
