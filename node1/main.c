@@ -12,8 +12,9 @@
 
 #define F_CPU 4915200 // Clockspeed
 
-volatile int ReceiveFlag = 0;        // <-- define here
-volatile int oledFlag = 0;
+volatile int ReceiveFlag = 0; 
+volatile int oledFlag    = 0;
+volatile int canFlag     = 0;
 
 pos_t joystick_pos, slider_pos;
 position currentPosition = PLAY;
@@ -65,9 +66,6 @@ int main()
     printf("Initializing\r\n");
     frame_clear();
     oled_clear();
-    //char * testString = "HELLO WORLD";
-    //oled_printf(testString, 0, 1, NORMAL);
-    //can_test();
     while(1){
         if(oledFlag == 1){
             updateOLED(FULL);
@@ -75,8 +73,15 @@ int main()
 
         if (ReceiveFlag){
             //char received_char = receive_usart(received_char);
-            //printf("Received\n");
+            //printf("Received USART: %d\n", received_char);
             ReceiveFlag = 0;
+        }
+
+        if (canFlag){
+            receive_can(&msg_in);
+            printf("CAN Message, ID: %d Length: %d Data: %d\r\n", msg_in.id, msg_in.length, msg_in.data);
+            transmit_can(&msg_out, 0);
+            canFlag = 0;
         }
         
         slave_select(IO);
