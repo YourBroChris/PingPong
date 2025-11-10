@@ -17,3 +17,4 @@ void reset_instruction();
 void select_mode(uint8_t configuration_mode);
 void transmit_can(can_message* msg, uint8_t buffer_index);
 void receive_can(can_message* msg);
+int receive_can_any(can_message* m);

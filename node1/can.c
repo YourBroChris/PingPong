@@ -1,6 +1,7 @@
 #include "can.h"
 #include "spi.h"
 
+#define BUKT 2 
 
 void init_can(){
     //init_spi();
@@ -24,12 +25,14 @@ void init_can(){
     write_instruction(MCP_RXB1CTRL, 0x60);      // same for RXB1
     bitmodify_instruction(MCP_RXB0CTRL, 1<<BUKT, 1<<BUKT); // optional: rollover
 
+    bitmodify_instruction(MCP_CANINTF, 0x00, 0xFF);   // clear all
+    write_instruction(MCP_CANINTE, 0x03);             // RX0IE | RX1IE
 
-    write_instruction(MCP_RXB0CTRL, 0x00);
-    write_instruction(MCP_RXM0SIDH, 0x00);
-    write_instruction(MCP_RXM0SIDL, 0x00);
-    write_instruction(MCP_RXF0SIDH, 0x00);
-    write_instruction(MCP_RXF0SIDL, 0x00);
+    // write_instruction(MCP_RXB0CTRL, 0x00);
+    // write_instruction(MCP_RXM0SIDH, 0x00);
+    // write_instruction(MCP_RXM0SIDL, 0x00);
+    // write_instruction(MCP_RXF0SIDH, 0x00);
+    // write_instruction(MCP_RXF0SIDL, 0x00);
 
     select_mode(MCP_NORMAL);
     uint8_t mode2 = read_instruction(MCP_CANSTAT) & 0xE0;
@@ -72,7 +75,7 @@ void rts_instruction(uint8_t txb_bits){
     slave_select(CAN);
     uint8_t rts_instr = (0b10000000 | txb_bits);
     write_byte(rts_instr);
-    slave_select(NONE);slave_select(CAN);
+    slave_select(NONE);
 }
 
 void bitmodify_instruction(uint8_t addr, uint8_t data, uint8_t mask){
@@ -149,4 +152,42 @@ void receive_can(can_message* msg){
 
     // Optionally clear RXB0 interrupt flag
     bitmodify_instruction(MCP_CANINTF, 0x00, MCP_RX0IF);
+}
+
+static void receive_can_rx0(can_message* m){
+    slave_select(CAN);
+    write_byte(0x90);                           // READ RXB0
+    uint8_t h = read_byte(), l = read_byte();   // SIDH, SIDL
+    (void)read_byte(); (void)read_byte();       // EID8, EID0
+    uint8_t dlc = read_byte();                  // DLC
+    for (uint8_t i=0;i<8;i++) m->data[i] = read_byte();
+    slave_select(NONE);
+
+    m->id     = ((uint16_t)h<<3) | (l>>5);
+    m->length = dlc & 0x0F;
+
+    bitmodify_instruction(MCP_CANINTF, 0x00, MCP_RX0IF);  // clear RX0IF
+}
+
+static void receive_can_rx1(can_message* m){
+    slave_select(CAN);
+    write_byte(0x94);                           // READ RXB1
+    uint8_t h = read_byte(), l = read_byte();
+    (void)read_byte(); (void)read_byte();
+    uint8_t dlc = read_byte();
+    for (uint8_t i=0;i<8;i++) m->data[i] = read_byte();
+    slave_select(NONE);
+
+    m->id     = ((uint16_t)h<<3) | (l>>5);
+    m->length = dlc & 0x0F;
+
+    bitmodify_instruction(MCP_CANINTF, 0x00, MCP_RX1IF);  // clear RX1IF
+}
+
+// Call this from your loop/ISR:
+int receive_can_any(can_message* m){
+    uint8_t intf = read_instruction(MCP_CANINTF);
+    if (intf & MCP_RX0IF) { receive_can_rx0(m); return 1; }
+    if (intf & MCP_RX1IF) { receive_can_rx1(m); return 2; }
+    return 0;
 }
