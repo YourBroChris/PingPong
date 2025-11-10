@@ -80,7 +80,7 @@ int main()
         printf("canFlag: %d\r\n", canFlag);
         if (canFlag){
             if (receive_can_any(&msg_in)){
-            printf("CAN Message, ID:%u Length:%u Data0:%u\r\n", msg_in.id, msg_in.length, msg_in.data[0]);
+            printf("CAN Message, ID:%u Length:%u Data:%u\r\n", msg_in.id, msg_in.length, msg_in.data[0]);
             }
             // if (read_instruction(MCP_CANINTF) & ((MCP_RX0IF) | (MCP_RX1IF))) {
             //     receive_can_any(&msg_in);
