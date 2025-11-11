@@ -11,6 +11,9 @@ SOURCE_FILES = \
 	uart.c \
 	can.c \
 	pwm.c \
+	adc.c \
+	motordriver.c \
+	encoder.c \
 #   filename1.c \
 #   filename2.c \
 #	filenameN.c

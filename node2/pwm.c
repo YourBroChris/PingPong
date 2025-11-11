@@ -48,7 +48,7 @@ void init_pwm(){
     PWM->PWM_CH_NUM[1].PWM_CPRD = 26250; //: PWM Channel Period Register, 20ms
     PWM->PWM_CH_NUM[1].PWM_CDTY = pwm_MIN; //: PWM Channel Duty Cycle Register, 2ms
     // (0.9ms-2.1ms) -> (1181-2756) PWM_CDTY values
-    PWM->PWM_ENA = PWM_ENA_CHID1; //: PsWM Enable Register, channel ID, try (1 << 1) if it doesnt work
+    PWM->PWM_ENA |= PWM_ENA_CHID1; //: PsWM Enable Register, channel ID, try (1 << 1) if it doesnt work
 
 
     disable_write_protection(ENABLE);

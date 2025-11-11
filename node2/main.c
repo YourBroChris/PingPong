@@ -4,6 +4,8 @@
 #include "uart.h"
 #include "can.h"
 #include "pwm.h"
+#include "adc.h"
+#include "motordriver.h"
 /*write_instruction
  * Remember to update the Makefile with the (relative) path to the uart.c file.
  * This starter code will not compile until the UART file has been included in the Makefile. 
@@ -52,14 +54,21 @@ int main()
     uart_init(F_CPU, 9600);
     can_init(canTiming, 0); // 0 = no interrupt
     init_pwm();
+    adc_init();
+    //motordriver_init();
+    //encoder_init();
+    //goright();
     WDT->WDT_MR = WDT_MR_WDDIS; //Disable Watchdog Timer
     
     while (1)
     {
-        can_tx(msgTx);
+        //can_tx(msgTx);
         if(can_rx(&msgRx)){
-            change_pwm(msgRx.byte[1]);
-            printf("CAN message: id=%d len=%d Joystick x: %d y: %d\r\n", msgRx.id, msgRx.length, msgRx.byte[0], msgRx.byte[1]);
+            //motorchange(msgRx.byte[0]);
+            //change_pwm(msgRx.byte[1]);
+            //printf("CAN message: id=%d len=%d Joystick x: %d y: %d\r\n", msgRx.id, msgRx.length, msgRx.byte[0], msgRx.byte[1]);
+            uint16_t adc_value = adc_read();
+            printf("ADC Value: %d\r\n", adc_value);
         }
     }
     

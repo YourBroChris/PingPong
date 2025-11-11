@@ -2,4 +2,4 @@
 #include <stdio.h>
 #include <stdint.h>
 
-encoder_init();
+void encoder_init();
