@@ -58,12 +58,15 @@ void init_pwm(){
 }
 
 void change_pwm(uint8_t rawjoystickpos){
-    // I assume you change PWD registers to change width
-    uint32_t pulse_width = pwm_MIN + ((uint32_t)rawjoystickpos * (pwm_MAX - pwm_MIN)) / 255;
-    if((pulse_width > 1181) & (pulse_width < 2756)){
-        PWM->PWM_CH_NUM[1].PWM_CDTYUPD = pulse_width;
-    }
-    else{
-        printf("Pulse width out of range: %d\r\n", pulse_width);
-    }
+    static uint8_t prevJoyStickPos = 155;
+    const uint8_t deadband = 5; // Change in joystick needed to update the servo
+    int pulse_width;
+    if(abs((int)rawjoystickpos - (int)prevJoyStickPos) > deadband) {
+        pulse_width = pwm_MIN + ((int)(rawjoystickpos) * (pwm_MAX - pwm_MIN)) / 255;
+        if((pulse_width > 1181) && (pulse_width < 2756)){
+            PWM->PWM_CH_NUM[1].PWM_CDTYUPD = pulse_width;
+            prevJoyStickPos = rawjoystickpos;
+            }
+        else{printf("Pulse width out of range: %lu\r\n", pulse_width);}
+        }
 }
