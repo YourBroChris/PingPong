@@ -6,6 +6,8 @@
 #include "pwm.h"
 #include "adc.h"
 #include "motordriver.h"
+#include "encoder.h"
+#include "solenoid.h"
 /*write_instruction
  * Remember to update the Makefile with the (relative) path to the uart.c file.
  * This starter code will not compile until the UART file has been included in the Makefile. 
@@ -55,35 +57,25 @@ int main()
     can_init(canTiming, 0); // 0 = no interrupt
     init_pwm();
     adc_init();
-    //motordriver_init();
-    //encoder_init();
-    //goright();
+    motordriver_init();
+    encoder_init();
+    //init_solenoid();
+    //goleft();
     WDT->WDT_MR = WDT_MR_WDDIS; //Disable Watchdog Timer
     
     while (1)
     {
         //can_tx(msgTx);
+        //activate_solenoid(1);
         if(can_rx(&msgRx)){
-            //motorchange(msgRx.byte[0]);
-            //change_pwm(msgRx.byte[1]);
             //printf("CAN message: id=%d len=%d Joystick x: %d y: %d\r\n", msgRx.id, msgRx.length, msgRx.byte[0], msgRx.byte[1]);
-            uint16_t adc_value = adc_read();
-            printf("ADC Value: %d\r\n", adc_value);
+            motorchange(msgRx.byte[0]);
+            uint32_t encoder_value = encoder_read();
+            printf("Encoder Value: %lu\r\n", encoder_value);
+            change_pwm(msgRx.byte[1]);
+            //uint16_t adc_value = adc_read();
+            //printf("ADC Value: %d\r\n", adc_value);
         }
     }
     
 }
-
-
-void test_servo_header(){
-    PMC->PMC_PCER0 = (1 << ID_PIOB); // Enable the clock for PIOB (Port B)
-
-    // Step 2: Configure PB13 as an output
-    PIOB->PIO_PER = PIO_PB13;        // Enable control of PB13 (set PIO Enable Register)
-    PIOB->PIO_OER = PIO_PB13;        // Set PB13 as output (set Output Enable Register)
-    //PIOB->PIO_PDR = PIO_PB13;        // Disable PIO (Parallel I/O) control for PB13
-
-    // Step 3: Set PB13 high
-    PIOB->PIO_SODR = PIO_PB13;      // Set PB13 high (Set Output Data Register)
-    //PIOB->PIO_CODR = PIO_PB13; 
-};

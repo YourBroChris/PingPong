@@ -14,6 +14,7 @@ SOURCE_FILES = \
 	adc.c \
 	motordriver.c \
 	encoder.c \
+	solenoid.c \
 #   filename1.c \
 #   filename2.c \
 #	filenameN.c

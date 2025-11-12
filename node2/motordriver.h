@@ -7,4 +7,4 @@
 
 void motordriver_init();
 void motorchange(uint8_t rawjoystickpos);
-void goright();
+void goleft();

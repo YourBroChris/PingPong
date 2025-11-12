@@ -1,10 +1,15 @@
 #include "motordriver.h"
+#include "pwm.h"
 
 void motordriver_init(){
+    disable_write_protection(DIS);
+    if ( (PWM->PWM_WPSR & WP_SW_MASK) != 0 || (PWM->PWM_WPSR & WP_HW_MASK) != 0 ) {
+        printf("PWM WP not disabled correctly\r\n");
+    }
  // Enable peripheral clocks
     PMC->PMC_PCER0 |= (1 << ID_PIOB);               // Enable PIOB
     PMC->PMC_PCER0 |= (1 << ID_PIOC);               // Enable PIOB
-    PMC->PMC_PCER1 |= (1 << (ID_PWM - 32));         // Enable PWM
+    PMC->PMC_PCER1 |= (1 << (ID_PWM - 32));       
 
 
     // Disable PIO
@@ -20,45 +25,44 @@ void motordriver_init(){
     PIOB->PIO_ABSR |= PIO_PB12;  // Select peripheral B
     PIOB->PIO_PUDR |= PIO_PB12; // Disable pull-up
 
-    //This register can only be written if the bits WPSWS0 and WPHWS0 are cleared in “PWM Write Protect Status Register” on page 1039.
-    PWM->PWM_CLK = PWM_CLK_PREA(3) | PWM_CLK_DIVA(8); //: PWM Clock register. Sets a prescaler, not required
-    //This register can only be written if the bits WPSWS2 and WPHWS2 are cleared in “PWM Write Protect Status Register” on page 1039.
-    PWM->PWM_CH_NUM[0].PWM_CMR  = PWM_CMR_CPOL | PWM_CMR_CPRE_CLKA; //: PWM Channel Mode Register
-    PWM->PWM_CH_NUM[0].PWM_CPRD = 2620; //: PWM Channel Period Register, 20ms
-    PWM->PWM_CH_NUM[0].PWM_CDTY = motor_MIN; //: PWM Channel Duty Cycle Register, 2ms
 
-    PWM->PWM_ENA |= PWM_ENA_CHID0; //: PsWM Enable Register, channel ID, try (1 << 1) if it doesnt work
+    PWM->PWM_CLK = PWM_CLK_PREA(3) | PWM_CLK_DIVA(8); //: PWM Clock register. Sets a prescaler, not required
+
+    PWM->PWM_CH_NUM[0].PWM_CMR  = PWM_CMR_CPOL | PWM_CMR_CPRE_CLKA; //: PWM Channel Mode Register
+    PWM->PWM_CH_NUM[0].PWM_CPRD = 262; 
+    PWM->PWM_CH_NUM[0].PWM_CDTY = 100; 
+
+    PWM->PWM_ENA |= (1 << 0); //PWM_ENA_CHID0; //: PsWM Enable Register, channel ID, try (1 << 1) if it doesnt work
 }
 
-void goright(){
-    PIOC->PIO_SODR = PIO_PC23; // RIGHT
-    PWM->PWM_CH_NUM[0].PWM_CDTYUPD = 10;
+void goleft(){
+    PIOC->PIO_SODR = PIO_PC23; // LEFT
+    PWM->PWM_CH_NUM[0].PWM_CDTYUPD = 100;
 }
 
 void motorchange(uint8_t rawjoystickpos){
     static uint8_t prevJoyStickPos = 160;
     const uint8_t deadband = 5; // Change in joystick needed to update the servo
     
-    if (rawjoystickpos < 160){
-        printf("Setting direction to LEFT\r\n");
-        PIOC->PIO_CODR = PIO_PC23; // LEFT
+    if (rawjoystickpos > 160){
+        //printf("Setting direction to RIGHT\r\n");
+        PIOC->PIO_CODR = PIO_PC23; // RIGHT
     }
     else{
-        printf("Setting direction to RIGHT\r\n");
-        PIOC->PIO_SODR = PIO_PC23; // RIGHT
+        //printf("Setting direction to LEFT\r\n");
+        PIOC->PIO_SODR = PIO_PC23; // LEFT
     }
 
     int pulse_width;
     if(abs((int)rawjoystickpos - (int)prevJoyStickPos) > deadband) {
-
-        pulse_width = motor_MIN + ((int)(rawjoystickpos) * (motor_MAX - motor_MIN)) / 255;
-        if((pulse_width > motor_MIN) && (pulse_width < motor_MAX)){
-            printf("Setting motor pulse width to: %lu\r\n", pulse_width);
+        pulse_width = abs((int)rawjoystickpos - 160);
+        if((pulse_width < 105)){
+            //printf("Setting motor pulse width to: %lu\r\n", pulse_width);
             PWM->PWM_CH_NUM[0].PWM_CDTYUPD = pulse_width;
             prevJoyStickPos = rawjoystickpos;
         }
         else{
-            printf("Pulse width out of range: %lu\r\n", pulse_width);
+            //printf("Pulse width out of range: %lu\r\n", pulse_width);
         }
     }   
 }
