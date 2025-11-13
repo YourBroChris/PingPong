@@ -9,6 +9,8 @@
 #include "encoder.h"
 #include "solenoid.h"
 #include "pid.h"
+
+void updateScore(uint16_t adc_value, uint8_t* in_goal, uint8_t* score);
 /*write_instruction
  * Remember to update the Makefile with the (relative) path to the uart.c file.
  * This starter code will not compile until the UART file has been included in the Makefile. 
@@ -74,9 +76,7 @@ int main()
     adc_init();
     motordriver_init();
     encoder_init();
-    timer0_init();
-    pid_init(&pid, 2.0f, 0.5f, 1.0f, 0.01f);
-    init_solenoid();
+    //init_solenoid();
     //goleft();
     WDT->WDT_MR = WDT_MR_WDDIS; //Disable Watchdog Timer
     struct enc_boundaries boundaries = calibrating_encoder();
@@ -109,6 +109,7 @@ int main()
             //change_pwm(msgRx.byte[1]);
             //uint16_t adc_value = adc_read();
             //printf("ADC Value: %d\r\n", adc_value);
+            // updateScore(adc_value, &in_goal, &score);
         }
 
         // if (pid_flag)
@@ -124,4 +125,26 @@ int main()
         
     }
     
+}
+
+// Ikke testet enda
+void updateScore(uint16_t adc_value, uint8_t* in_goal, uint8_t* score){
+    if (!*in_goal)
+    {
+        if (adc_value < 250){
+            (*score)++;
+            *in_goal = 1;
+        }
+        else{
+            *in_goal = 0;
+        }
+    }
+    else if (*in_goal){
+        if (adc_value > 250){
+            *in_goal = 0;
+        }
+        else{
+            *in_goal = 1;
+        }
+    }
 }
