@@ -40,6 +40,12 @@ void goleft(){
     PWM->PWM_CH_NUM[0].PWM_CDTYUPD = 12;
 }
 
+
+void goright(){
+    PIOC->PIO_CODR = PIO_PC23; // RIGHT
+    PWM->PWM_CH_NUM[0].PWM_CDTYUPD = 12;
+}
+
 void motorchange(uint8_t rawjoystickpos){
     static uint8_t prevJoyStickPos = 160;
     const uint8_t deadband = 5; // Change in joystick needed to update the servo

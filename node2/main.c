@@ -8,6 +8,7 @@
 #include "motordriver.h"
 #include "encoder.h"
 #include "solenoid.h"
+#include "pid.h"
 /*write_instruction
  * Remember to update the Makefile with the (relative) path to the uart.c file.
  * This starter code will not compile until the UART file has been included in the Makefile. 
@@ -20,6 +21,17 @@
 //#include "../path_to/uart.h"
 
 #define F_CPU 84000000
+
+volatile uint8_t pid_flag = 0;
+
+
+float map_joystick_to_speed(uint8_t joystick)
+{
+    const int center = 128; // Joystick center i actually 160, it goes from 55 to 250 approximately, not sure if that affects it
+    const float max_speed = 1000.0f; // encoder counts per second
+    return (joystick - center) * (max_speed / 128.0f);
+}
+
 
 int main()
 {
@@ -52,6 +64,9 @@ int main()
         .byte = {0x03}
     };
 
+    struct PIDController pid;
+    
+
     SystemInit();
     uart_init(F_CPU, 9600);
     can_init(canTiming, 0); // 0 = no interrupt
@@ -59,23 +74,54 @@ int main()
     adc_init();
     motordriver_init();
     encoder_init();
-    //init_solenoid();
+    timer0_init();
+    pid_init(&pid, 2.0f, 0.5f, 1.0f, 0.01f);
+    init_solenoid();
     //goleft();
     WDT->WDT_MR = WDT_MR_WDDIS; //Disable Watchdog Timer
-    
+    struct enc_boundaries boundaries = calibrating_encoder();
+    printf("Calibration done. Left: %d Right: %d\r\n", boundaries.left_boundary, boundaries.right_boundary);
+
+    static int32_t last_encoder = 0;
+    int32_t current_encoder = encoder_read();
+    float measured_speed = (current_encoder - last_encoder) / pid.dt;
+    last_encoder = current_encoder;
+
+    int target_speed = 0;
     while (1)
     {
-        //can_tx(msgTx);
-        //activate_solenoid(1);
+        can_tx(msgTx);
+        
+        
         if(can_rx(&msgRx)){
-            //printf("CAN message: id=%d len=%d Joystick x: %d y: %d\r\n", msgRx.id, msgRx.length, msgRx.byte[0], msgRx.byte[1]);
+            printf("CAN message: id=%d len=%d Joystick x: %d y: %d, Button: %d\r\n", msgRx.id, msgRx.length, msgRx.byte[0], msgRx.byte[1], msgRx.byte[2]);
             motorchange(msgRx.byte[0]);
-            uint32_t encoder_value = encoder_read();
-            printf("Encoder Value: %lu\r\n", encoder_value);
+            target_speed = map_joystick_to_speed(msgRx.byte[0]);
+            current_encoder = encoder_read();
+            if((msgRx.byte[2] % 2 ) == 1){ // Checks if button is pressed
+                activate_solenoid(0);
+            }
+            else{
+                activate_solenoid(1);
+            }
+            
+            printf("Encoder Value: %d\r\n", current_encoder);
             //change_pwm(msgRx.byte[1]);
             //uint16_t adc_value = adc_read();
             //printf("ADC Value: %d\r\n", adc_value);
         }
+
+        // if (pid_flag)
+        //     {
+        //         last_encoder = current_encoder;
+        //         current_encoder = encoder_read();
+        //         measured_speed = (current_encoder - last_encoder) / pid.dt;
+        //         float control_signal = pid_compute(&pid, (float)target_speed, measured_speed);
+        //         // Use control_signal to adjust motor speed via PWM
+        //         printf("Setpoint: %d Measured Speed: %.2f Control Signal: %.2f\r\n", target_speed, measured_speed, control_signal);
+        //         pid_flag = 0;
+        //     }
+        
     }
     
 }

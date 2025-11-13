@@ -2,5 +2,13 @@
 #include <stdio.h>
 #include <stdint.h>
 
+struct enc_boundaries
+{
+    int left_boundary;
+    int right_boundary;
+};
+
+
 void encoder_init();
-uint32_t encoder_read();
+int encoder_read();
+struct enc_boundaries calibrating_encoder();

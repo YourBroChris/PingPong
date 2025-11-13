@@ -1,4 +1,12 @@
 #include "encoder.h"
+#include "motordriver.h"
+
+void delay_ms(uint32_t ms) {
+    // crude delay loop based on CPU frequency
+    for (uint32_t i = 0; i < (ms * (84000000 / 13000)); i++) {
+        __asm("nop");
+    }
+}
 
 void encoder_init(){
     PMC->PMC_PCER1 |= (1 << (ID_TC6 - 32));
@@ -14,6 +22,24 @@ void encoder_init(){
     TC2->TC_CHANNEL[0].TC_CCR = TC_CCR_CLKEN | TC_CCR_SWTRG;
 }
 
-uint32_t encoder_read(){
+int encoder_read(){
     return TC2->TC_CHANNEL[0].TC_CV;
 }
+
+
+struct enc_boundaries calibrating_encoder(){
+    struct enc_boundaries boundaries;
+    // Move all the way to the right
+    goright();
+    delay_ms(2000); // Wait for 2 seconds to ensure it reaches the boundary
+    boundaries.right_boundary = encoder_read();
+    printf("Right boundary: %d\r\n", boundaries.right_boundary);
+
+    // Move all the way to the left
+    goleft();
+    delay_ms(2000); // Wait for 2 seconds to ensure it reaches the boundary
+    boundaries.left_boundary = encoder_read();
+    printf("Left boundary: %d\r\n", boundaries.left_boundary);
+    return boundaries;
+}
+

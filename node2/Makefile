@@ -17,6 +17,7 @@ SOURCE_FILES = \
 	solenoid.c \
 	pi_controller.c \
 	timer.c \
+	pid.c \
 #   filename1.c \
 #   filename2.c \
 #	filenameN.c
