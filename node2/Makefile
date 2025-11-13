@@ -15,6 +15,8 @@ SOURCE_FILES = \
 	motordriver.c \
 	encoder.c \
 	solenoid.c \
+	pi_controller.c \
+	timer.c \
 #   filename1.c \
 #   filename2.c \
 #	filenameN.c

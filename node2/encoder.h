@@ -3,3 +3,4 @@
 #include <stdint.h>
 
 void encoder_init();
+uint32_t encoder_read();

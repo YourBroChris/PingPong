@@ -72,7 +72,7 @@ int main()
             motorchange(msgRx.byte[0]);
             uint32_t encoder_value = encoder_read();
             printf("Encoder Value: %lu\r\n", encoder_value);
-            change_pwm(msgRx.byte[1]);
+            //change_pwm(msgRx.byte[1]);
             //uint16_t adc_value = adc_read();
             //printf("ADC Value: %d\r\n", adc_value);
         }

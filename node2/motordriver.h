@@ -2,8 +2,9 @@
 #include <stdio.h>
 #include <stdint.h>
 
-#define motor_MIN 12
-#define motor_MAX 26
+#define motor_MIN 0
+#define motor_MAX 30
+
 
 void motordriver_init();
 void motorchange(uint8_t rawjoystickpos);

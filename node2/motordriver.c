@@ -29,15 +29,15 @@ void motordriver_init(){
     PWM->PWM_CLK = PWM_CLK_PREA(3) | PWM_CLK_DIVA(8); //: PWM Clock register. Sets a prescaler, not required
 
     PWM->PWM_CH_NUM[0].PWM_CMR  = PWM_CMR_CPOL | PWM_CMR_CPRE_CLKA; //: PWM Channel Mode Register
-    PWM->PWM_CH_NUM[0].PWM_CPRD = 262; 
-    PWM->PWM_CH_NUM[0].PWM_CDTY = 100; 
+    PWM->PWM_CH_NUM[0].PWM_CPRD = 30; 
+    PWM->PWM_CH_NUM[0].PWM_CDTY = 12; 
 
     PWM->PWM_ENA |= (1 << 0); //PWM_ENA_CHID0; //: PsWM Enable Register, channel ID, try (1 << 1) if it doesnt work
 }
 
 void goleft(){
     PIOC->PIO_SODR = PIO_PC23; // LEFT
-    PWM->PWM_CH_NUM[0].PWM_CDTYUPD = 100;
+    PWM->PWM_CH_NUM[0].PWM_CDTYUPD = 12;
 }
 
 void motorchange(uint8_t rawjoystickpos){
@@ -55,10 +55,10 @@ void motorchange(uint8_t rawjoystickpos){
 
     int pulse_width;
     if(abs((int)rawjoystickpos - (int)prevJoyStickPos) > deadband) {
-        pulse_width = abs((int)rawjoystickpos - 160);
-        if((pulse_width < 105)){
+        pulse_width = abs((int)rawjoystickpos - 160)/10;
+        if((pulse_width <= 10)){
             //printf("Setting motor pulse width to: %lu\r\n", pulse_width);
-            PWM->PWM_CH_NUM[0].PWM_CDTYUPD = pulse_width;
+            PWM->PWM_CH_NUM[0].PWM_CDTYUPD = pulse_width*1.7;
             prevJoyStickPos = rawjoystickpos;
         }
         else{
