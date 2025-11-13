@@ -8,6 +8,8 @@
 #include "motordriver.h"
 #include "encoder.h"
 #include "solenoid.h"
+
+void updateScore(uint16_t adc_value, uint8_t* in_goal, uint8_t* score);
 /*write_instruction
  * Remember to update the Makefile with the (relative) path to the uart.c file.
  * This starter code will not compile until the UART file has been included in the Makefile. 
@@ -59,7 +61,7 @@ int main()
     adc_init();
     motordriver_init();
     encoder_init();
-    uint8_t goal = 0;
+    uint8_t in_goal = 0;
     uint8_t score = 0;
     //init_solenoid();
     //goleft();
@@ -77,29 +79,30 @@ int main()
             //change_pwm(msgRx.byte[1]);
             //uint16_t adc_value = adc_read();
             //printf("ADC Value: %d\r\n", adc_value);
+            // updateScore(adc_value, &in_goal, &score);
         }
     }
     
 }
 
 // Ikke testet enda
-void updateScore(uint16_t adc_value, uint8_t goal, uint8_t score){
-    if (!goal)
+void updateScore(uint16_t adc_value, uint8_t* in_goal, uint8_t* score){
+    if (!*in_goal)
     {
         if (adc_value < 250){
-            score++;
-            goal = 1;
+            (*score)++;
+            *in_goal = 1;
         }
         else{
-            goal = 0;
+            *in_goal = 0;
         }
     }
-    else if (goal){
+    else if (*in_goal){
         if (adc_value > 250){
-            goal = 0;
+            *in_goal = 0;
         }
         else{
-            goal = 1;
+            *in_goal = 1;
         }
     }
 }
