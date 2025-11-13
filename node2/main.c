@@ -59,6 +59,8 @@ int main()
     adc_init();
     motordriver_init();
     encoder_init();
+    uint8_t goal = 0;
+    uint8_t score = 0;
     //init_solenoid();
     //goleft();
     WDT->WDT_MR = WDT_MR_WDDIS; //Disable Watchdog Timer
@@ -78,4 +80,26 @@ int main()
         }
     }
     
+}
+
+// Ikke testet enda
+void updateScore(uint16_t adc_value, uint8_t goal, uint8_t score){
+    if (!goal)
+    {
+        if (adc_value < 250){
+            score++;
+            goal = 1;
+        }
+        else{
+            goal = 0;
+        }
+    }
+    else if (goal){
+        if (adc_value > 250){
+            goal = 0;
+        }
+        else{
+            goal = 1;
+        }
+    }
 }
