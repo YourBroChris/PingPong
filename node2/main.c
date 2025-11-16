@@ -78,8 +78,10 @@ int main()
         if(can_rx(&msgRx)){
             //printf("CAN message: id=%d len=%d Joystick x: %d y: %d, Button: %d\r\n", msgRx.id, msgRx.length, msgRx.byte[0], msgRx.byte[1], msgRx.byte[2]);
             motorDriveVelocity(msgRx.byte[0]);
+            current_encoder = encoder_read();
+            //motorDrivePosition(joystickToMotorPosition(msgRx.byte[0], &boundaries), current_encoder, &boundaries, &pid);
             servochange(msgRx.byte[1]);
-            //current_encoder = encoder_read();
+            
             if((msgRx.byte[2] % 2 ) == 1){ // Checks if button is pressed
                 //printf("Solenoid activated\r\n");
                 activate_solenoid();

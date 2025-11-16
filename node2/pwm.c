@@ -56,7 +56,7 @@ void init_pwm(){
 
 void servochange(uint8_t rawjoystickpos){
     static uint8_t prevJoyStickPos = 155;
-    const uint8_t deadband = 5; // Change in joystick needed to update the servo
+    const uint8_t deadband = 15; // Change in joystick needed to update the servo
     int pulse_width;
     if(abs((int)rawjoystickpos - (int)prevJoyStickPos) > deadband) {
         pulse_width = pwm_MIN + ((int)(rawjoystickpos) * (pwm_MAX - pwm_MIN)) / 255;

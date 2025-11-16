@@ -89,27 +89,28 @@ void motorDriveVelocity(uint8_t rawjoystickpos){
     }   
 }
 
-// void motorDrivePosition(int targetPosition, int currentPosition, struct enc_boundaries* boundaries, struct PIDController* pid){
-//     int error = targetPosition - currentPosition;
 
-//     if (error == 0){
-//         PWM->PWM_CH_NUM[0].PWM_CDTYUPD = 0;
-//         return;
-//     }
+void motorDrivePosition(int targetPosition, int currentPosition, struct enc_boundaries* boundaries, struct PIDController* pid){
+    int error = targetPosition - currentPosition;
 
-//     float pid_output = pid_compute(pid, (float)targetPosition, (float)currentPosition);
+    if (error == 0){
+        PWM->PWM_CH_NUM[0].PWM_CDTYUPD = 0;
+        return;
+    }
 
-//     if (pid_output > 0){
-//         PIOC->PIO_CODR = PIO_PC23; // RIGHT
-//     }
-//     else{
-//         PIOC->PIO_SODR = PIO_PC23; // LEFT
-//     }
+    float pid_output = pid_compute(pid, (float)targetPosition, (float)currentPosition);
 
-//     float duty = fabsf(pid_output);
+    if (pid_output > 0){
+        PIOC->PIO_CODR = PIO_PC23; // RIGHT
+    }
+    else{
+        PIOC->PIO_SODR = PIO_PC23; // LEFT
+    }
 
-//     int maxDuty = PWM->PWM_CH_NUM[0].PWM_CPRD;
-//     if (duty > maxDuty * 0.30f) duty = maxDuty * 0.30f;  // example limit
+    float duty = fabsf(pid_output);
 
-//     PWM->PWM_CH_NUM[0].PWM_CDTYUPD = (int)duty;
-// }
+    int maxDuty = PWM->PWM_CH_NUM[0].PWM_CPRD;
+    if (duty > maxDuty * 0.30f) duty = maxDuty * 0.30f;  // example limit
+
+    PWM->PWM_CH_NUM[0].PWM_CDTYUPD = (int)duty;
+}
