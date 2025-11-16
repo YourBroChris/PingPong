@@ -10,7 +10,7 @@
 #include "solenoid.h"
 #include "pid.h"
 
-void updateScore(uint16_t adc_value, uint8_t* in_goal, uint8_t* score);
+void updateScore(uint16_t adc_value, uint8_t* in_goal);
 /*write_instruction
  * Remember to update the Makefile with the (relative) path to the uart.c file.
  * This starter code will not compile until the UART file has been included in the Makefile. 
@@ -25,28 +25,13 @@ void updateScore(uint16_t adc_value, uint8_t* in_goal, uint8_t* score);
 #define F_CPU 84000000
 
 volatile uint8_t pid_flag = 0;
-
-
-float map_joystick_to_speed(uint8_t joystick)
-{
-    const int center = 128; // Joystick center i actually 160, it goes from 55 to 250 approximately, not sure if that affects it
-    const float max_speed = 1000.0f; // encoder counts per second
-    return (joystick - center) * (max_speed / 128.0f);
-}
+static uint8_t counter = 0;
 
 
 int main()
 {
-    /*
-    SystemInit();
-    uart_init(F_CPU, 9600);
-    init_pwm();
-    while(1){
-        printf("CLK PRESCALER: %d \r\n", PWM->PWM_CLK);
-    }
-    */
-    
 
+    
     CanInit canTiming = {
         .phase2 = 5,
         .propag = 1,
@@ -76,42 +61,42 @@ int main()
     adc_init();
     motordriver_init();
     encoder_init();
-    //init_solenoid();
-    //goleft();
+    init_solenoid();
     WDT->WDT_MR = WDT_MR_WDDIS; //Disable Watchdog Timer
     struct enc_boundaries boundaries = calibrating_encoder();
     printf("Calibration done. Left: %d Right: %d\r\n", boundaries.left_boundary, boundaries.right_boundary);
 
-    static int32_t last_encoder = 0;
     int32_t current_encoder = encoder_read();
-    float measured_speed = (current_encoder - last_encoder) / pid.dt;
-    last_encoder = current_encoder;
+    uint8_t in_goal = 0;
 
-    int target_speed = 0;
     while (1)
     {
-        can_tx(msgTx);
+
+        
         
         
         if(can_rx(&msgRx)){
-            printf("CAN message: id=%d len=%d Joystick x: %d y: %d, Button: %d\r\n", msgRx.id, msgRx.length, msgRx.byte[0], msgRx.byte[1], msgRx.byte[2]);
-            motorchange(msgRx.byte[0]);
-            target_speed = map_joystick_to_speed(msgRx.byte[0]);
-            current_encoder = encoder_read();
+            //printf("CAN message: id=%d len=%d Joystick x: %d y: %d, Button: %d\r\n", msgRx.id, msgRx.length, msgRx.byte[0], msgRx.byte[1], msgRx.byte[2]);
+            motorDriveVelocity(msgRx.byte[0]);
+            servochange(msgRx.byte[1]);
+            //current_encoder = encoder_read();
             if((msgRx.byte[2] % 2 ) == 1){ // Checks if button is pressed
-                activate_solenoid(0);
+                //printf("Solenoid activated\r\n");
+                activate_solenoid();
             }
-            else{
-                activate_solenoid(1);
-            }
-            
-            printf("Encoder Value: %d\r\n", current_encoder);
-            //change_pwm(msgRx.byte[1]);
-            //uint16_t adc_value = adc_read();
-            //printf("ADC Value: %d\r\n", adc_value);
-            // updateScore(adc_value, &in_goal, &score);
-        }
+       
+            //printf("Encoder Value: %d\r\n", current_encoder);
 
+        }
+        uint16_t adc_value = adc_read();
+        updateScore(adc_value, &in_goal);
+        
+        msgTx.byte[0] = in_goal;
+
+        if(in_goal == 1){
+            printf("ADC Value: %d\r\n", adc_value);
+            can_tx(msgTx);
+        }
         // if (pid_flag)
         //     {
         //         last_encoder = current_encoder;
@@ -127,24 +112,22 @@ int main()
     
 }
 
-// Ikke testet enda
-void updateScore(uint16_t adc_value, uint8_t* in_goal, uint8_t* score){
-    if (!*in_goal)
-    {
-        if (adc_value < 250){
-            (*score)++;
+
+void updateScore(uint16_t adc_value, uint8_t* in_goal)
+{
+
+    const uint8_t required_samples = 10;   // tune this
+    const uint16_t threshold = 2000;
+
+    if (adc_value < threshold) {
+        if (counter < required_samples)
+            counter++;
+
+        if (counter >= required_samples)
             *in_goal = 1;
-        }
-        else{
-            *in_goal = 0;
-        }
     }
-    else if (*in_goal){
-        if (adc_value > 250){
-            *in_goal = 0;
-        }
-        else{
-            *in_goal = 1;
-        }
+    else {
+        counter = 0;        // reset when signal goes back high
+        *in_goal = 0;
     }
 }

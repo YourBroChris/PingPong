@@ -71,9 +71,9 @@ void can_init(CanInit init, uint8_t rxInterrupt){
 
 
 void can_tx(CanMsg m){
-    printf("Attempting to send to CAN\r\n");
+    //printf("Attempting to send to CAN\r\n");
     while(!(CAN0->CAN_MB[txMailbox].CAN_MSR & CAN_MSR_MRDY)){}
-    printf("Passed CAN loop\r\n");
+    //printf("Passed CAN loop\r\n");
     // Set message ID and use CAN 2.0B protocol
     CAN0->CAN_MB[txMailbox].CAN_MID = CAN_MID_MIDvA(m.id) | CAN_MID_MIDE ;
         

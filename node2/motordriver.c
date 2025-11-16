@@ -1,5 +1,9 @@
 #include "motordriver.h"
 #include "pwm.h"
+#include "encoder.h"
+#include "pid.h"
+#include "sam/sam3x/include/sam.h"
+#include <math.h>
 
 void motordriver_init(){
     disable_write_protection(DIS);
@@ -46,7 +50,19 @@ void goright(){
     PWM->PWM_CH_NUM[0].PWM_CDTYUPD = 12;
 }
 
-void motorchange(uint8_t rawjoystickpos){
+void motorstop(){
+    PWM->PWM_CH_NUM[0].PWM_CDTYUPD = 0;
+}
+
+int joystickToMotorPosition(uint8_t x, struct enc_boundaries *boundaries){
+    // Map joystick position to encoder boundaries
+    int position = boundaries->left_boundary + (((int)x - 0) * (boundaries->right_boundary - boundaries->left_boundary)) / (255 - 0);
+    // c + (x - a) * (d - c) / (b - a)
+    // a = 0, b = 255
+    return position;
+}
+
+void motorDriveVelocity(uint8_t rawjoystickpos){
     static uint8_t prevJoyStickPos = 160;
     const uint8_t deadband = 5; // Change in joystick needed to update the servo
     
@@ -72,3 +88,28 @@ void motorchange(uint8_t rawjoystickpos){
         }
     }   
 }
+
+// void motorDrivePosition(int targetPosition, int currentPosition, struct enc_boundaries* boundaries, struct PIDController* pid){
+//     int error = targetPosition - currentPosition;
+
+//     if (error == 0){
+//         PWM->PWM_CH_NUM[0].PWM_CDTYUPD = 0;
+//         return;
+//     }
+
+//     float pid_output = pid_compute(pid, (float)targetPosition, (float)currentPosition);
+
+//     if (pid_output > 0){
+//         PIOC->PIO_CODR = PIO_PC23; // RIGHT
+//     }
+//     else{
+//         PIOC->PIO_SODR = PIO_PC23; // LEFT
+//     }
+
+//     float duty = fabsf(pid_output);
+
+//     int maxDuty = PWM->PWM_CH_NUM[0].PWM_CPRD;
+//     if (duty > maxDuty * 0.30f) duty = maxDuty * 0.30f;  // example limit
+
+//     PWM->PWM_CH_NUM[0].PWM_CDTYUPD = (int)duty;
+// }

@@ -5,4 +5,4 @@
 
 
 void init_solenoid();
-void activate_solenoid(uint8_t flag);
+void activate_solenoid();

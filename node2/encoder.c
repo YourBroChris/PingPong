@@ -27,19 +27,40 @@ int encoder_read(){
 }
 
 
+int wait_until_stopped(void) {
+    int last = encoder_read();
+    int stable_count = 0;
+
+    while (1) {
+        delay_ms(5); // small delay
+        int now = encoder_read();
+
+        if (now == last) {
+            stable_count++;
+            if (stable_count > 10) {  
+                // encoder unchanged for ~50 ms
+                return now;
+            }
+        } else {
+            stable_count = 0;
+        }
+
+        last = now;
+    }
+}
+
 struct enc_boundaries calibrating_encoder(){
     struct enc_boundaries boundaries;
     // Move all the way to the right
     goright();
-    delay_ms(2000); // Wait for 2 seconds to ensure it reaches the boundary
-    boundaries.right_boundary = encoder_read();
+    boundaries.right_boundary = wait_until_stopped();
     printf("Right boundary: %d\r\n", boundaries.right_boundary);
 
     // Move all the way to the left
     goleft();
-    delay_ms(2000); // Wait for 2 seconds to ensure it reaches the boundary
-    boundaries.left_boundary = encoder_read();
+    boundaries.left_boundary = wait_until_stopped();
     printf("Left boundary: %d\r\n", boundaries.left_boundary);
+    motorstop();
     return boundaries;
 }
 
