@@ -80,13 +80,16 @@ int main()
         if(can_rx(&msgRx)){
             //printf("CAN message: id=%d len=%d Joystick x: %d y: %d, Button: %d\r\n", msgRx.id, msgRx.length, msgRx.byte[0], msgRx.byte[1], msgRx.byte[2]);
             //motorDriveVelocity(msgRx.byte[0]);
-            
-            servochange(msgRx.byte[1]);
-            
-            if((msgRx.byte[2] % 2 ) == 1){ // Checks if button is pressed
-                //printf("Solenoid activated\r\n");
-                activate_solenoid();
+            if((msgRx.byte[3] == 1))
+            {
+                servochange(msgRx.byte[1]);
+                if(((msgRx.byte[2] % 2 ) == 1) ){ // Checks if button is pressed
+                    //printf("Solenoid activated\r\n");
+                    activate_solenoid();
+                }
             }
+            
+
        
             //printf("Encoder Value: %d\r\n", current_encoder);
 
@@ -95,12 +98,13 @@ int main()
         updateScore(adc_value, &in_goal);
         
         msgTx.byte[0] = in_goal;
-
+        //printf("Goal state: %d\r\n", in_goal);
+        printf("GAME state: %d\r\n", msgRx.byte[3]);
         if(in_goal == 1){
-            printf("ADC Value: %d\r\n", adc_value);
+            //printf("ADC Value: %d\r\n", adc_value);
             can_tx(msgTx);
         }
-        if (pid_flag){
+        if (pid_flag && (msgRx.byte[3] == 1) ) { 
             target_position = joystickToMotorPosition(msgRx.byte[0], &boundaries);
             current_encoder = encoder_read();
             motorDrivePosition(target_position, current_encoder, &boundaries, &pid);    

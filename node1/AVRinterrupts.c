@@ -6,8 +6,10 @@
 extern volatile uint8_t ReceiveFlag;     // <-- declare as extern
 extern volatile uint8_t oledFlag;
 extern volatile uint8_t canFlag;
+extern volatile uint16_t game_seconds;
+extern volatile uint8_t game_running;
 int oledTimerFreq = 30; //30 Hz
-int canTimerFreq = 1; //30 Hz
+int canTimerFreq = 10; //30 Hz
 
 void init_interrupts(void)
 {
@@ -50,9 +52,20 @@ ISR(USART1_RXC_vect)
     // Process the received character
 }
 
-ISR(TIMER0_COMP_vect){
+ISR(TIMER0_COMP_vect) {
     oledFlag = 1;
+
+    if (game_running) {
+        static uint8_t tick_count = 0;
+
+        tick_count++;
+        if (tick_count >= 30) {   // 30 ticks = ~1 second
+            tick_count = 0;
+            game_seconds++;
+        }
+    }
 }
+
 
 ISR(TIMER2_COMP_vect){
     canFlag = 1;
