@@ -56,7 +56,9 @@ void motorstop(){
 
 int joystickToMotorPosition(uint8_t x, struct enc_boundaries *boundaries){
     // Map joystick position to encoder boundaries
-    int position = boundaries->left_boundary + (((int)x - 0) * (boundaries->right_boundary - boundaries->left_boundary)) / (255 - 0);
+    int a = 70;
+    int b = 246;
+    int position = boundaries->left_boundary + (((int)x - a) * (boundaries->right_boundary - boundaries->left_boundary)) / (b - a);
     // c + (x - a) * (d - c) / (b - a)
     // a = 0, b = 255
     return position;
@@ -93,24 +95,28 @@ void motorDriveVelocity(uint8_t rawjoystickpos){
 void motorDrivePosition(int targetPosition, int currentPosition, struct enc_boundaries* boundaries, struct PIDController* pid){
     int error = targetPosition - currentPosition;
 
-    if (error == 0){
+    // If we are already at or very close to target, stop.
+    if (abs(error) < 15) {           // deadband of 3 encoder counts
         PWM->PWM_CH_NUM[0].PWM_CDTYUPD = 0;
         return;
     }
 
     float pid_output = pid_compute(pid, (float)targetPosition, (float)currentPosition);
 
-    if (pid_output > 0){
-        PIOC->PIO_CODR = PIO_PC23; // RIGHT
-    }
-    else{
-        PIOC->PIO_SODR = PIO_PC23; // LEFT
+    if (pid_output > 0) {
+        // Need to move right
+        PIOC->PIO_CODR = PIO_PC23;      // RIGHT direction
+    } 
+    else {
+        // Need to move left
+        PIOC->PIO_SODR = PIO_PC23;      // LEFT direction
     }
 
     float duty = fabsf(pid_output);
 
     int maxDuty = PWM->PWM_CH_NUM[0].PWM_CPRD;
-    if (duty > maxDuty * 0.30f) duty = maxDuty * 0.30f;  // example limit
+    if (duty > maxDuty * 0.90f)
+        duty = maxDuty * 0.90f;
 
     PWM->PWM_CH_NUM[0].PWM_CDTYUPD = (int)duty;
 }

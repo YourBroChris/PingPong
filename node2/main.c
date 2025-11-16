@@ -26,7 +26,7 @@ void updateScore(uint16_t adc_value, uint8_t* in_goal);
 
 volatile uint8_t pid_flag = 0;
 static uint8_t counter = 0;
-
+static int target_position = 0;
 
 int main()
 {
@@ -62,6 +62,8 @@ int main()
     motordriver_init();
     encoder_init();
     init_solenoid();
+    pid_init(&pid, 1.0f, 0.0f, 0.1f, 0.01f); // Kp, Ki, Kd, dt
+    timer0_init();
     WDT->WDT_MR = WDT_MR_WDDIS; //Disable Watchdog Timer
     struct enc_boundaries boundaries = calibrating_encoder();
     printf("Calibration done. Left: %d Right: %d\r\n", boundaries.left_boundary, boundaries.right_boundary);
@@ -77,9 +79,8 @@ int main()
         
         if(can_rx(&msgRx)){
             //printf("CAN message: id=%d len=%d Joystick x: %d y: %d, Button: %d\r\n", msgRx.id, msgRx.length, msgRx.byte[0], msgRx.byte[1], msgRx.byte[2]);
-            motorDriveVelocity(msgRx.byte[0]);
-            current_encoder = encoder_read();
-            //motorDrivePosition(joystickToMotorPosition(msgRx.byte[0], &boundaries), current_encoder, &boundaries, &pid);
+            //motorDriveVelocity(msgRx.byte[0]);
+            
             servochange(msgRx.byte[1]);
             
             if((msgRx.byte[2] % 2 ) == 1){ // Checks if button is pressed
@@ -99,16 +100,11 @@ int main()
             printf("ADC Value: %d\r\n", adc_value);
             can_tx(msgTx);
         }
-        // if (pid_flag)
-        //     {
-        //         last_encoder = current_encoder;
-        //         current_encoder = encoder_read();
-        //         measured_speed = (current_encoder - last_encoder) / pid.dt;
-        //         float control_signal = pid_compute(&pid, (float)target_speed, measured_speed);
-        //         // Use control_signal to adjust motor speed via PWM
-        //         printf("Setpoint: %d Measured Speed: %.2f Control Signal: %.2f\r\n", target_speed, measured_speed, control_signal);
-        //         pid_flag = 0;
-        //     }
+        if (pid_flag){
+            target_position = joystickToMotorPosition(msgRx.byte[0], &boundaries);
+            current_encoder = encoder_read();
+            motorDrivePosition(target_position, current_encoder, &boundaries, &pid);    
+            }
         
     }
     
