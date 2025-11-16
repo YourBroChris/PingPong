@@ -96,7 +96,7 @@ void motorDrivePosition(int targetPosition, int currentPosition, struct enc_boun
     int error = targetPosition - currentPosition;
 
     // If we are already at or very close to target, stop.
-    if (abs(error) < 15) {           // deadband of 3 encoder counts
+    if (abs(error) < 30) {           // deadband of 3 encoder counts
         PWM->PWM_CH_NUM[0].PWM_CDTYUPD = 0;
         return;
     }

@@ -62,7 +62,7 @@ int main()
     motordriver_init();
     encoder_init();
     init_solenoid();
-    pid_init(&pid, 1.0f, 0.0f, 0.1f, 0.01f); // Kp, Ki, Kd, dt
+    pid_init(&pid, 1.0f, 0.0f, 0.05f, 0.01f); // Kp, Ki, Kd, dt
     timer0_init();
     WDT->WDT_MR = WDT_MR_WDDIS; //Disable Watchdog Timer
     struct enc_boundaries boundaries = calibrating_encoder();
